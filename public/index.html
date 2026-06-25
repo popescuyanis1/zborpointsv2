@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZBOR HUB Târgu Jiu</title>
+  <style>
+    :root {
+      --bg: #071b2f;
+      --panel: rgba(10, 31, 57, 0.82);
+      --text: #f5fbff;
+      --muted: #c7d9e9;
+      --teal: #12b8b5;
+      --pink: #ef4f95;
+      --blue: #3666d6;
+      --green: #67d87d;
+      --danger: #ff8f9f;
+      --warning: #ffd978;
+      --border: rgba(255,255,255,0.11);
+      --shadow: 0 18px 44px rgba(0,0,0,0.25);
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--bg); }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 15%, rgba(18,184,181,0.22), transparent 18%),
+        radial-gradient(circle at 88% 18%, rgba(239,79,149,0.18), transparent 18%),
+        radial-gradient(circle at 55% 88%, rgba(54,102,214,0.18), transparent 24%),
+        linear-gradient(180deg, #12b8b5 0%, #138ea8 18%, #194f9d 52%, #0a2340 100%);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+    body.is-ready { opacity: 1; transform: translateY(0); }
+    body.is-leaving { opacity: 0; transform: translateY(10px); }
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      filter: blur(18px);
+      pointer-events: none;
+      opacity: 0.25;
+      z-index: 0;
+    }
+    body::before {
+      left: -80px;
+      top: 120px;
+      background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.18) 55%, transparent 72%);
+    }
+    body::after {
+      right: -90px;
+      bottom: 70px;
+      background: radial-gradient(circle, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.14) 58%, transparent 74%);
+    }
+    button, input, select, textarea { font: inherit; }
+    select option { color: #111; background: #fff; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      position: relative;
+      z-index: 1;
+    }
+    .sidebar {
+      background: rgba(7, 24, 43, 0.62);
+      border-right: 1px solid var(--border);
+      padding: 24px 18px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      backdrop-filter: blur(12px);
+    }
+    .brand {
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      line-height: 1.02;
+      letter-spacing: 0.02em;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .brand p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 20px;
+    }
+    .nav-link {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border-radius: 18px;
+      text-decoration: none;
+      font-weight: 700;
+      color: var(--text);
+      border: 1px solid transparent;
+      background: rgba(255,255,255,0.05);
+      transition: 0.18s ease;
+    }
+    .nav-link:hover, .nav-link.active {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.16);
+      transform: translateY(-1px);
+    }
+    .nav-link.hidden { display: none; }
+    .sidebar-footer {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .main { padding: 24px; }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .page-title h2 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      letter-spacing: 0.01em;
+    }
+    .page-title p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 74ch;
+    }
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .chip {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .btn {
+      border: 0;
+      border-radius: 16px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: 0.18s ease;
+      font-weight: 800;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--pink), #ff79b1);
+      color: white;
+      box-shadow: 0 10px 22px rgba(239,79,149,0.25);
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.09);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .access-banner {
+      display: none;
+      margin-bottom: 18px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255,217,120,0.10);
+      border: 1px solid rgba(255,217,120,0.24);
+      color: #fff4cf;
+      animation: fadeSlideIn 0.26s ease;
+    }
+    .access-banner.show { display: block; }
+    .access-banner strong { display: block; margin-bottom: 6px; font-size: 15px; }
+    .access-banner span { color: #f7e7b8; font-size: 13px; line-height: 1.5; }
+
+    .grid-4, .grid-3 {
+      display: grid;
+      gap: 18px;
+    }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+    .card {
+      background: linear-gradient(180deg, rgba(11,35,64,0.84), rgba(8,28,53,0.78));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      transition: transform 0.22s ease, border-color 0.22s ease;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.18);
+    }
+    .accent-card {
+      background:
+        radial-gradient(circle at 80% 18%, rgba(255,255,255,0.22), transparent 20%),
+        linear-gradient(135deg, rgba(18,184,181,0.22), rgba(54,102,214,0.18) 52%, rgba(239,79,149,0.15) 100%),
+        rgba(8,28,53,0.82);
+    }
+    .hero-card {
+      margin-bottom: 18px;
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .hero-copy h3 {
+      margin: 0 0 12px;
+      font-size: 26px;
+    }
+    .hero-copy p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .hero-pill {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+    .hero-info {
+      display: grid;
+      gap: 12px;
+    }
+    .hero-box {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+    }
+    .hero-box strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+    .hero-box span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .stat-card {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(7, 29, 53, 0.85);
+      border: 1px solid var(--border);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.18);
+    }
+    .stat-label { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+    .stat-value { font-size: 32px; font-weight: 800; }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .section-head h3 { margin: 0; font-size: 20px; }
+    .section-head p { margin: 0; color: var(--muted); font-size: 13px; }
+    .stack { display: flex; flex-direction: column; gap: 12px; }
+
+    .row-card {
+      display: grid;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      animation: fadeSlideIn 0.24s ease;
+      transition: transform 0.18s ease, border-color 0.18s ease;
+    }
+    .row-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.18);
+    }
+    .leaderboard-item { grid-template-columns: 58px 1fr auto; }
+    .dept-item { grid-template-columns: 1fr auto; }
+    .feed-item { grid-template-columns: 1fr auto; }
+
+    .rank {
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.08);
+      font-weight: 800;
+    }
+    .rank.rank-1 { background: linear-gradient(135deg, #ffd978, #ffb84a); color: #241400; }
+    .rank.rank-2 { background: linear-gradient(135deg, #dbe5ff, #aebce5); color: #111a35; }
+    .rank.rank-3 { background: linear-gradient(135deg, #ffcfb0, #e29d78); color: #271305; }
+
+    .row-main {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 0;
+    }
+    .row-main strong { font-size: 15px; }
+    .row-sub { color: var(--muted); font-size: 13px; line-height: 1.45; }
+
+    .pill-points, .pill-score, .pill-delta {
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .pill-points {
+      background: rgba(54,102,214,0.24);
+      border: 1px solid rgba(54,102,214,0.25);
+      color: #eef4ff;
+    }
+    .pill-score {
+      background: rgba(103,216,125,0.14);
+      border: 1px solid rgba(103,216,125,0.20);
+      color: #dcffe5;
+    }
+    .pill-delta.plus {
+      background: rgba(103,216,125,0.14);
+      border: 1px solid rgba(103,216,125,0.20);
+      color: #dcffe5;
+    }
+    .pill-delta.minus {
+      background: rgba(255,143,159,0.14);
+      border: 1px solid rgba(255,143,159,0.22);
+      color: #ffe6ea;
+    }
+    .empty {
+      padding: 20px;
+      border-radius: 18px;
+      border: 1px dashed rgba(255,255,255,0.18);
+      color: var(--muted);
+      text-align: center;
+      animation: fadeSlideIn 0.24s ease;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .quick-card {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+    }
+    .quick-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+    .quick-card span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 1180px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .nav { display: grid; grid-template-columns: repeat(5, 1fr); }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .grid-3, .hero-card, .quick-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      .main { padding: 18px; }
+      .grid-4 { grid-template-columns: 1fr; }
+      .nav { grid-template-columns: 1fr; }
+      .leaderboard-item, .dept-item, .feed-item { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>ZBOR HUB Târgu Jiu</h1>
+        <p>Bine ai venit în dashboardul intern. Aici vezi rapid topurile lunare, activitatea recentă, coordonatorii și regulile de punctaj.</p>
+      </div>
+
+      <nav class="nav">
+        <a class="nav-link active" href="index.html">Dashboard</a>
+        <a class="nav-link" href="departments.html">Departamente</a>
+        <a class="nav-link" href="volunteers.html">Voluntari</a>
+        <a class="nav-link" href="puncte.html">Legenda punctelor</a>
+        <a class="nav-link" href="users.html" id="coordinatorsNavLink">Coordonatori</a>
+      </nav>
+
+      <div class="sidebar-footer" id="sidebarFooterText">
+        Managerii și coordonatorii pot administra datele din platformă.<br>
+        Voluntarii pot intra doar în modul de vizualizare.
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="page-title">
+          <h2 id="welcomeTitle">Bine ai venit</h2>
+          <p id="welcomeSubtitle">Aici vezi pe scurt ce se întâmplă în hub și cine are cea mai mare implicare în luna calendaristică actuală.</p>
+        </div>
+        <div class="toolbar">
+          <span class="chip" id="monthChip">Luna curentă</span>
+          <span class="chip" id="currentRole">Rol: necunoscut</span>
+          <button class="btn btn-secondary" id="signOutBtn">Ieșire</button>
+        </div>
+      </header>
+<section class="grid-4">
+        <div class="stat-card">
+          <div class="stat-label">Voluntari activi</div>
+          <div class="stat-value" id="statVolunteers">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Departamente</div>
+          <div class="stat-value" id="statDepartments">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Acțiuni luna asta</div>
+          <div class="stat-value" id="statMonthlyActions">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Puncte luna asta</div>
+          <div class="stat-value" id="statMonthlyPoints">0</div>
+        </div>
+      </section>
+
+      <section class="grid-3" style="margin-top: 18px;">
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <h3>Top lunar voluntari</h3>
+              <p>Primele 10 profiluri după punctele din luna calendaristică actuală</p>
+            </div>
+          </div>
+          <div class="stack" id="generalLeaderboard"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <h3>Top lunar departamente</h3>
+              <p>Media punctelor lunare ale membrilor activi și coordonatorul setat</p>
+            </div>
+          </div>
+          <div class="stack" id="departmentLeaderboard"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <h3>Activitate recentă</h3>
+              <p>Ultimele acțiuni salvate în sistem</p>
+            </div>
+          </div>
+          <div class="stack" id="activityFeed"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyCSVheYP870CO0d9kbBGW6xMqS5SeVV_x4",
+  authDomain: "punctevoluntari.firebaseapp.com",
+  databaseURL: "https://punctevoluntari-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "punctevoluntari",
+  storageBucket: "punctevoluntari.firebasestorage.app",
+  messagingSenderId: "1055611698088",
+  appId: "1:1055611698088:web:074cc034009a60cca83b9d",
+  measurementId: "G-B98Y7KMLPJ"
+};
+
+    const DB_ROOT = "zborHubTgJiu";
+    const DEPARTMENTS = [
+      { id: "hr", name: "HR" },
+      { id: "pr", name: "PR si Comunicare" },
+      { id: "create", name: "Creatie si Implementare" }
+    ];
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const els = {
+      currentRole: document.getElementById("currentRole"),
+      monthChip: document.getElementById("monthChip"),
+      signOutBtn: document.getElementById("signOutBtn"),
+      welcomeTitle: document.getElementById("welcomeTitle"),
+      welcomeSubtitle: document.getElementById("welcomeSubtitle"),
+      heroRoleBox: document.getElementById("heroRoleBox"),
+      heroRoleText: document.getElementById("heroRoleText"),
+      heroCoordinatorText: document.getElementById("heroCoordinatorText"),
+      heroLegendText: document.getElementById("heroLegendText"),
+      statVolunteers: document.getElementById("statVolunteers"),
+      statDepartments: document.getElementById("statDepartments"),
+      statMonthlyActions: document.getElementById("statMonthlyActions"),
+      statMonthlyPoints: document.getElementById("statMonthlyPoints"),
+      generalLeaderboard: document.getElementById("generalLeaderboard"),
+      departmentLeaderboard: document.getElementById("departmentLeaderboard"),
+      activityFeed: document.getElementById("activityFeed"),
+      accessBanner: document.getElementById("accessBanner"),
+      coordinatorsNavLink: document.getElementById("coordinatorsNavLink"),
+      sidebarFooterText: document.getElementById("sidebarFooterText"),
+      navLinks: Array.from(document.querySelectorAll(".nav-link"))
+    };
+
+    const state = {
+      me: null,
+      myProfile: null,
+      volunteers: [],
+      actions: [],
+      users: [],
+      departmentSettings: {},
+      pointsLegend: null
+    };
+
+    bindTransitions();
+    requestAnimationFrame(() => document.body.classList.add("is-ready"));
+    renderMonthChip();
+
+    els.signOutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      state.me = user;
+
+      if (user.isAnonymous) {
+        state.myProfile = { fullName: "Voluntar", role: "volunteer", department: "" };
+        renderWelcome();
+        applyRoleVisibility();
+      } else {
+        listenToMyProfile(user.uid);
+      }
+
+      listenToUsers();
+      listenToDepartmentSettings();
+      listenToVolunteers();
+      listenToActions();
+      listenToPointsLegend();
+    });
+
+    function bindTransitions() {
+      els.navLinks.forEach((link) => {
+        link.addEventListener("click", (event) => {
+          const href = link.getAttribute("href");
+          if (!href || href.startsWith("#") || link.classList.contains("hidden")) return;
+          event.preventDefault();
+          document.body.classList.remove("is-ready");
+          document.body.classList.add("is-leaving");
+          setTimeout(() => { window.location.href = href; }, 180);
+        });
+      });
+    }
+
+    function renderMonthChip() {
+      const label = new Date().toLocaleDateString("ro-RO", { month: "long", year: "numeric" });
+      els.monthChip.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+    }
+
+    function listenToMyProfile(uid) {
+      onValue(ref(db, `${DB_ROOT}/users/${uid}`), (snapshot) => {
+        state.myProfile = snapshot.val() || null;
+        renderWelcome();
+        applyRoleVisibility();
+      });
+    }
+
+    function listenToUsers() {
+      onValue(ref(db, `${DB_ROOT}/users`), (snapshot) => {
+        state.users = Object.values(snapshot.val() || {});
+        renderDashboard();
+      });
+    }
+
+    function listenToDepartmentSettings() {
+      onValue(ref(db, `${DB_ROOT}/departmentSettings`), (snapshot) => {
+        state.departmentSettings = snapshot.val() || {};
+        renderDashboard();
+      });
+    }
+
+    function listenToVolunteers() {
+      onValue(ref(db, `${DB_ROOT}/volunteers`), (snapshot) => {
+        state.volunteers = Object.values(snapshot.val() || {}).map(normalizeVolunteer);
+        renderDashboard();
+      });
+    }
+
+    function listenToActions() {
+      onValue(ref(db, `${DB_ROOT}/actions`), (snapshot) => {
+        state.actions = Object.values(snapshot.val() || {}).map(normalizeAction);
+        renderDashboard();
+      });
+    }
+
+    function listenToPointsLegend() {
+      onValue(ref(db, `${DB_ROOT}/pointsLegend`), (snapshot) => {
+        state.pointsLegend = snapshot.val() || null;
+        renderLegendPreview();
+      });
+    }
+
+    function renderWelcome() {
+      const profile = state.myProfile;
+      const firstName = profile?.fullName ? profile.fullName.split(" ")[0] : "bine ai venit";
+      const role = profile?.role || "volunteer";
+
+      els.currentRole.textContent = `Rol: ${friendlyRole(role)}`;
+
+      if (profile?.fullName) {
+        els.welcomeTitle.textContent = `Bine ai venit, ${firstName}`;
+      } else {
+        els.welcomeTitle.textContent = "Bine ai venit";
+      }
+
+      if (role === "volunteer") {
+        els.welcomeSubtitle.textContent = "Poți urmări clasamentele lunare, activitatea recentă și cum evoluează departamentele.";
+        if (els.heroRoleBox) els.heroRoleBox.textContent = "Mod de acces";
+        if (els.heroRoleText) els.heroRoleText.textContent = "Ai acces de voluntar, doar pentru vizualizare.";
+      } else {
+        els.welcomeSubtitle.textContent = "Poți urmări rapid clasamentele lunare, coordonatorii de departament și ultimele acțiuni din platformă.";
+        if (els.heroRoleBox) els.heroRoleBox.textContent = "Rol în platformă";
+        if (els.heroRoleText) els.heroRoleText.textContent = `Ești autentificat ca ${friendlyRole(role)}${profile?.department ? ` în ${profile.department}` : ""}.`;
+      }
+    }
+
+    function renderLegendPreview() {
+      const monthlyText = state.pointsLegend?.monthlyPrizeText || "Topul voluntarilor pe lună poate primi premiu.";
+      const negativeText = state.pointsLegend?.negativeRuleText || "Dacă se adună multe puncte pe minus, se poate discuta eliminarea din echipă.";
+      if (els.heroLegendText) els.heroLegendText.textContent = `${monthlyText} ${negativeText}`;
+    }
+
+    function applyRoleVisibility() {
+      const role = state.myProfile?.role || "volunteer";
+      const isVolunteer = role === "volunteer";
+
+      if (els.coordinatorsNavLink) els.coordinatorsNavLink.classList.toggle("hidden", isVolunteer);
+      if (els.accessBanner) els.accessBanner.classList.toggle("show", isVolunteer);
+
+      els.sidebarFooterText.innerHTML = isVolunteer
+        ? "Ești conectat ca voluntar.<br>Poți vedea dashboard-ul, departamentele, voluntarii și legenda punctelor, fără drept de modificare."
+        : "Managerii și coordonatorii pot administra datele din platformă.<br>Voluntarii pot intra doar în modul de vizualizare.";
+    }
+
+    function normalizeVolunteer(v) {
+      return {
+        id: v.id || "",
+        fullName: v.fullName || "Voluntar",
+        department: v.department || "HR",
+        activeStatus: v.activeStatus !== false,
+        totalPoints: Number(v.totalPoints || 0),
+        role: v.role || "volunteer",
+        avatar: v.avatar || getAvatar(v.fullName || "V")
+      };
+    }
+
+    function normalizeAction(a) {
+      return {
+        id: a.id || "",
+        volunteerId: a.volunteerId || "",
+        type: a.type || "actiune",
+        points: Number(a.points || 0),
+        reason: a.reason || "",
+        createdAt: a.createdAt || new Date().toISOString()
+      };
+    }
+
+    function renderDashboard() {
+      renderWelcome();
+      renderLegendPreview();
+
+      const activeVolunteers = state.volunteers.filter((v) => v.activeStatus);
+      const monthlyActions = state.actions.filter((a) => isCurrentMonth(a.createdAt));
+      const monthlyPoints = activeVolunteers.reduce((sum, v) => sum + getMonthlyPoints(v.id), 0);
+
+      els.statVolunteers.textContent = activeVolunteers.length;
+      els.statDepartments.textContent = DEPARTMENTS.length;
+      els.statMonthlyActions.textContent = monthlyActions.length;
+      els.statMonthlyPoints.textContent = monthlyPoints;
+
+      renderGeneralLeaderboard(activeVolunteers);
+      renderDepartmentLeaderboard(activeVolunteers);
+      renderActivityFeed();
+      renderCoordinatorPreview();
+    }
+
+    function renderGeneralLeaderboard(volunteers) {
+      const rows = volunteers
+        .slice()
+        .sort((a, b) =>
+          getMonthlyPoints(b.id) - getMonthlyPoints(a.id) ||
+          b.totalPoints - a.totalPoints ||
+          a.fullName.localeCompare(b.fullName, "ro")
+        )
+        .slice(0, 10);
+
+      els.generalLeaderboard.innerHTML = rows.length
+        ? rows.map((v, i) => `
+            <div class="row-card leaderboard-item">
+              <div class="rank ${i < 3 ? `rank-${i + 1}` : ""}">#${i + 1}</div>
+              <div class="row-main">
+                <strong>${escapeHtml(v.fullName)}</strong>
+                <div class="row-sub">${escapeHtml(v.department)} • ${escapeHtml(friendlyRole(v.role || "volunteer"))} • total ${v.totalPoints} p</div>
+              </div>
+              <div class="pill-points">${getMonthlyPoints(v.id)} p</div>
+            </div>
+          `).join("")
+        : empty("Nu există voluntari încă.");
+    }
+
+    function renderDepartmentLeaderboard(activeVolunteers) {
+      const rows = DEPARTMENTS.map((dept) => {
+        const members = activeVolunteers.filter((v) => normalizeDepartment(v.department) === dept.id);
+        const total = members.reduce((sum, v) => sum + getMonthlyPoints(v.id), 0);
+        const avg = members.length ? Math.round(total / members.length) : 0;
+        const coordinator = getCoordinatorName(dept.id);
+        return { ...dept, members: members.length, total, avg, coordinator };
+      }).sort((a, b) => b.avg - a.avg || a.name.localeCompare(b.name, "ro"));
+
+      els.departmentLeaderboard.innerHTML = rows.length
+        ? rows.map((d, i) => `
+            <div class="row-card dept-item">
+              <div class="row-main">
+                <strong>#${i + 1} • ${escapeHtml(d.name)}</strong>
+                <div class="row-sub">${d.members} membri activi • total lunar ${d.total} p</div>
+                <div class="row-sub">Coordonator: ${escapeHtml(d.coordinator || "nesetat")}</div>
+              </div>
+              <div class="pill-score">medie ${d.avg} p</div>
+            </div>
+          `).join("")
+        : empty("Nu există departamente.");
+    }
+
+    function renderActivityFeed() {
+      const rows = state.actions.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 8);
+
+      els.activityFeed.innerHTML = rows.length
+        ? rows.map((action) => {
+            const volunteer = state.volunteers.find((v) => v.id === action.volunteerId);
+            return `
+              <div class="row-card feed-item">
+                <div class="row-main">
+                  <strong>${escapeHtml(volunteer?.fullName || "Necunoscut")}</strong>
+                  <div class="row-sub">${escapeHtml(action.reason)} • ${escapeHtml(action.type)} • ${formatDate(action.createdAt)}</div>
+                </div>
+                <div class="pill-delta ${action.points >= 0 ? "plus" : "minus"}">${action.points >= 0 ? "+" : ""}${action.points} p</div>
+              </div>
+            `;
+          }).join("")
+        : empty("Nu există acțiuni înregistrate încă.");
+    }
+
+    function renderCoordinatorPreview() {
+      const hrCoordinator = getCoordinatorName("hr");
+      if (hrCoordinator) {
+        if (els.heroCoordinatorText) els.heroCoordinatorText.textContent = `În acest moment, coordonatorul setat pentru HR este ${hrCoordinator}.`;
+        return;
+      }
+      const firstCoordinator = DEPARTMENTS.map((d) => getCoordinatorName(d.id)).find(Boolean);
+      if (els.heroCoordinatorText) {
+        els.heroCoordinatorText.textContent = firstCoordinator
+          ? `Un coordonator setat în platformă este ${firstCoordinator}.`
+          : "Coordonatorii apar aici imediat ce sunt salvați din pagina Coordonatori.";
+      }
+    }
+
+    function getCoordinatorName(departmentId) {
+      const setting = state.departmentSettings?.[departmentId];
+      if (setting?.coordinatorName) return setting.coordinatorName;
+      if (setting?.coordinatorUid) {
+        const profile = state.users.find((u) => u.uid === setting.coordinatorUid);
+        if (profile?.fullName) return profile.fullName;
+      }
+      const fallback = state.users.find(
+        (u) => normalizeDepartment(u.department) === departmentId && u.role === "department_coordinator" && u.activeStatus !== false
+      );
+      return fallback?.fullName || "";
+    }
+
+    function getMonthlyPoints(volunteerId) {
+      return state.actions
+        .filter((action) => action.volunteerId === volunteerId && isCurrentMonth(action.createdAt))
+        .reduce((sum, action) => sum + Number(action.points || 0), 0);
+    }
+
+    function friendlyRole(role) {
+      const labels = {
+        community_manager: "Community manager",
+        department_coordinator: "Coordonator departament",
+        volunteer: "Voluntar"
+      };
+      return labels[role] || role;
+    }
+
+    function normalizeDepartment(value) {
+      if (value === "HR" || value === "hr") return "hr";
+      if (value === "PR si Comunicare" || value === "pr") return "pr";
+      if (value === "Creatie si Implementare" || value === "create") return "create";
+      return value;
+    }
+
+    function getAvatar(name) {
+      const words = String(name).trim().split(/\s+/).filter(Boolean).slice(0, 2);
+      return words.map((word) => word[0] || "").join("").toUpperCase() || "V";
+    }
+
+    function isCurrentMonth(iso) {
+      const now = new Date();
+      const date = new Date(iso);
+      return now.getMonth() === date.getMonth() && now.getFullYear() === date.getFullYear();
+    }
+
+    function formatDate(iso) {
+      return new Date(iso).toLocaleString("ro-RO", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function empty(text) {
+      return `<div class="empty">${escapeHtml(text)}</div>`;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>

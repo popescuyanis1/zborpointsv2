@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZBOR HUB Târgu Jiu - Legenda punctelor</title>
+  <style>
+    :root {
+      --bg: #071b2f;
+      --text: #f5fbff;
+      --muted: #c7d9e9;
+      --teal: #12b8b5;
+      --pink: #ef4f95;
+      --blue: #3666d6;
+      --green: #67d87d;
+      --danger: #ff8f9f;
+      --warning: #ffd978;
+      --panel: rgba(8,28,53,0.82);
+      --panel-soft: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.11);
+      --shadow: 0 18px 44px rgba(0,0,0,0.25);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--bg); }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 15%, rgba(18,184,181,0.22), transparent 18%),
+        radial-gradient(circle at 88% 18%, rgba(239,79,149,0.18), transparent 18%),
+        radial-gradient(circle at 55% 88%, rgba(54,102,214,0.18), transparent 24%),
+        linear-gradient(180deg, #12b8b5 0%, #138ea8 18%, #194f9d 52%, #0a2340 100%);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+
+    body.is-ready { opacity: 1; transform: translateY(0); }
+    body.is-leaving { opacity: 0; transform: translateY(10px); }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      filter: blur(18px);
+      pointer-events: none;
+      opacity: 0.25;
+      z-index: 0;
+    }
+
+    body::before {
+      left: -80px;
+      top: 120px;
+      background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.18) 55%, transparent 72%);
+    }
+
+    body::after {
+      right: -90px;
+      bottom: 70px;
+      background: radial-gradient(circle, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.14) 58%, transparent 74%);
+    }
+
+    button, input, select, textarea { font: inherit; }
+    select option { color: #111; background: #fff; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      position: relative;
+      z-index: 1;
+    }
+
+    .sidebar {
+      background: rgba(7, 24, 43, 0.62);
+      border-right: 1px solid var(--border);
+      padding: 24px 18px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      line-height: 1.02;
+      letter-spacing: 0.02em;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .brand p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .nav-link {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border-radius: 18px;
+      text-decoration: none;
+      font-weight: 700;
+      color: var(--text);
+      border: 1px solid transparent;
+      background: rgba(255,255,255,0.05);
+      transition: 0.18s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.16);
+      transform: translateY(-1px);
+    }
+
+    .nav-link.hidden { display: none; }
+
+    .sidebar-footer {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .main { padding: 24px; }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .page-title h2 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      letter-spacing: 0.01em;
+    }
+
+    .page-title p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 74ch;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .chip {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 16px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: 0.18s ease;
+      font-weight: 800;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--pink), #ff79b1);
+      color: white;
+      box-shadow: 0 10px 22px rgba(239,79,149,0.25);
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.09);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-danger {
+      background: rgba(255,143,159,0.14);
+      border: 1px solid rgba(255,143,159,0.28);
+      color: #ffe6ea;
+    }
+    .btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .access-banner {
+      display: none;
+      margin-bottom: 18px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255,217,120,0.10);
+      border: 1px solid rgba(255,217,120,0.24);
+      color: #fff4cf;
+      animation: fadeSlideIn 0.26s ease;
+    }
+
+    .access-banner.show { display: block; }
+    .access-banner strong { display: block; margin-bottom: 6px; font-size: 15px; }
+    .access-banner span { color: #f7e7b8; font-size: 13px; line-height: 1.5; }
+
+    .grid-2, .grid-3 {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+    .card {
+      background: linear-gradient(180deg, rgba(11,35,64,0.84), rgba(8,28,53,0.78));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .accent-card {
+      background:
+        radial-gradient(circle at 80% 18%, rgba(255,255,255,0.22), transparent 20%),
+        linear-gradient(135deg, rgba(18,184,181,0.22), rgba(54,102,214,0.18) 52%, rgba(239,79,149,0.15) 100%),
+        rgba(8,28,53,0.82);
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .section-head h3 { margin: 0; font-size: 20px; }
+    .section-head p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .stack { display: flex; flex-direction: column; gap: 12px; }
+
+    .point-card {
+      display: grid;
+      grid-template-columns: 90px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      animation: fadeSlideIn 0.24s ease;
+    }
+
+    .point-value {
+      display: inline-grid;
+      place-items: center;
+      min-height: 52px;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .point-value.plus {
+      background: rgba(103,216,125,0.16);
+      border: 1px solid rgba(103,216,125,0.24);
+      color: #e3ffea;
+    }
+
+    .point-value.minus {
+      background: rgba(255,143,159,0.16);
+      border: 1px solid rgba(255,143,159,0.24);
+      color: #ffe5e9;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .field label { color: var(--muted); font-size: 13px; }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      padding: 12px 13px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    .rule-note {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .status-note {
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .status-note.error {
+      border-color: rgba(255,143,159,0.28);
+      color: #ffe6ea;
+      background: rgba(255,143,159,0.10);
+    }
+
+    .status-note.success {
+      border-color: rgba(103,216,125,0.28);
+      color: #e0ffea;
+      background: rgba(103,216,125,0.10);
+    }
+
+    .hidden { display: none !important; }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 1180px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .nav { display: grid; grid-template-columns: repeat(5, 1fr); }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      .main { padding: 18px; }
+      .nav { grid-template-columns: 1fr; }
+      .field-grid { grid-template-columns: 1fr; }
+      .point-card { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>ZBOR HUB Târgu Jiu</h1>
+        <p>Aici stabilești clar pentru ce se dau puncte, pentru ce se scad și ce reguli generale se aplică în platformă.</p>
+      </div>
+      <nav class="nav">
+        <a class="nav-link" href="index.html">Dashboard</a>
+        <a class="nav-link" href="departments.html">Departamente</a>
+        <a class="nav-link" href="volunteers.html">Voluntari</a>
+        <a class="nav-link active" href="puncte.html">Legenda punctelor</a>
+        <a class="nav-link" href="users.html" id="coordinatorsNavLink">Coordonatori</a>
+      </nav>
+      <div class="sidebar-footer" id="sidebarFooterText">
+        Managerii și coordonatorii pot edita legenda punctelor.<br>
+        Voluntarii o văd doar în modul de vizualizare.
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="page-title">
+          <h2>Legenda punctelor</h2>
+          <p>Regulile sunt vizibile pentru toată lumea. Managementul poate adăuga, șterge și rescrie punctele direct din această pagină.</p>
+        </div>
+        <div class="toolbar">
+          <span class="chip" id="currentRole">Rol: necunoscut</span>
+          <button class="btn btn-secondary" id="signOutBtn">Ieșire</button>
+        </div>
+      </header>
+
+      <div class="access-banner" id="accessBanner">
+        <strong>Ai acces doar la vizualizare</strong>
+        <span>Ca voluntar poți citi legenda punctelor, dar nu o poți modifica.</span>
+      </div>
+
+      <section class="grid-3">
+        <div class="card accent-card">
+          <div class="section-head">
+            <div>
+              <h3>Premiul lunii</h3>
+              <p>Mesaj general pentru clasamentul lunii</p>
+            </div>
+          </div>
+          <div class="rule-note" id="monthlyPrizeText"></div>
+        </div>
+
+        <div class="card accent-card">
+          <div class="section-head">
+            <div>
+              <h3>Puncte pe minus</h3>
+              <p>Mesaj general pentru penalizări</p>
+            </div>
+          </div>
+          <div class="rule-note" id="negativeRuleText"></div>
+        </div>
+
+        <div class="card accent-card">
+          <div class="section-head">
+            <div>
+              <h3>Regulă de risc</h3>
+              <p>Explicație pentru pragul lunar de risc</p>
+            </div>
+          </div>
+          <div class="rule-note" id="riskRuleText"></div>
+        </div>
+      </section>
+
+      <section class="grid-2" style="margin-top: 18px;">
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <h3>Puncte pozitive</h3>
+              <p>Pentru implicare, inițiativă, ajutor și responsabilitate</p>
+            </div>
+          </div>
+          <div class="stack" id="positiveList"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <h3>Puncte negative</h3>
+              <p>Pentru întârzieri, lipsă de implicare sau comportament nepotrivit</p>
+            </div>
+          </div>
+          <div class="stack" id="negativeList"></div>
+        </div>
+      </section>
+
+      <section class="grid-2" style="margin-top: 18px;" id="editorSection">
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <h3>Adaugă regulă</h3>
+              <p>Poți adăuga rapid o nouă regulă de punctaj</p>
+            </div>
+          </div>
+
+          <form id="ruleForm">
+            <div class="field-grid">
+              <div class="field">
+                <label for="ruleTypeInput">Categorie</label>
+                <select id="ruleTypeInput">
+                  <option value="positive">Puncte pozitive</option>
+                  <option value="negative">Puncte negative</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="rulePointsInput">Număr puncte</label>
+                <input id="rulePointsInput" type="number" value="10" required />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="ruleTitleInput">Titlu</label>
+              <input id="ruleTitleInput" type="text" placeholder="Ex: implicare foarte bună la eveniment" required />
+            </div>
+
+            <div class="field">
+              <label for="ruleDescriptionInput">Descriere</label>
+              <textarea id="ruleDescriptionInput" placeholder="Ex: a venit pregătit, a ajutat echipa și a dus taskul până la capăt"></textarea>
+            </div>
+
+            <button class="btn btn-primary" type="submit" id="saveRuleBtn">Salvează regula</button>
+          </form>
+
+          <div class="status-note" id="ruleStatus">Schimbările se salvează în Firebase și devin vizibile pentru toată platforma.</div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <h3>Mesaje generale</h3>
+              <p>Aici editezi regulile mari care apar sus</p>
+            </div>
+          </div>
+
+          <form id="messagesForm">
+            <div class="field">
+              <label for="monthlyPrizeInput">Mesaj premiu lunar</label>
+              <textarea id="monthlyPrizeInput"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="negativeRuleInput">Mesaj puncte pe minus</label>
+              <textarea id="negativeRuleInput"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="riskRuleInput">Mesaj regulă de risc</label>
+              <textarea id="riskRuleInput"></textarea>
+            </div>
+
+            <button class="btn btn-primary" type="submit" id="saveMessagesBtn">Salvează mesajele</button>
+          </form>
+
+          <div class="status-note" id="messagesStatus">Poți explica aici, pe înțelesul tuturor, cum funcționează premiul lunar și regula de risc.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+    import { getDatabase, ref, onValue, push, set, remove, update } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyCSVheYP870CO0d9kbBGW6xMqS5SeVV_x4",
+  authDomain: "punctevoluntari.firebaseapp.com",
+  databaseURL: "https://punctevoluntari-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "punctevoluntari",
+  storageBucket: "punctevoluntari.firebasestorage.app",
+  messagingSenderId: "1055611698088",
+  appId: "1:1055611698088:web:074cc034009a60cca83b9d",
+  measurementId: "G-B98Y7KMLPJ"
+};
+
+    const DB_ROOT = "zborHubTgJiu";
+    const MANAGER_ROLES = ["community_manager", "department_coordinator"];
+
+    const defaultLegend = {
+      positive: {
+        a1: { points: 5, title: "Prezență bună", description: "Participă activ și răspunde când este nevoie." },
+        a2: { points: 10, title: "Task dus la capăt", description: "Primește și finalizează un task clar și util." },
+        a3: { points: 15, title: "Implicare foarte bună", description: "Ajută echipa, vine pregătit și contribuie peste minim." }
+      },
+      negative: {
+        b1: { points: -5, title: "Întârziere", description: "Ajunge târziu sau întârzie constant fără anunț." },
+        b2: { points: -10, title: "Lipsă de implicare", description: "Nu își face taskul sau dispare fără feedback." },
+        b3: { points: -15, title: "Comportament nepotrivit", description: "Afectează negativ activitatea sau echipa." }
+      },
+      monthlyPrizeText: "Topul voluntarilor pe lună poate primi un premiu sau o recompensă stabilită de echipă.",
+      negativeRuleText: "Dacă un voluntar acumulează foarte multe puncte pe minus, poate fi scos din echipă după o analiză internă.",
+      riskRuleText: "Pragul de risc lunar se calculează din distribuția punctajelor lunare ale voluntarilor. Sub prag apare statusul de risc, iar mult sub prag apare risc critic."
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const els = {
+      currentRole: document.getElementById("currentRole"),
+      signOutBtn: document.getElementById("signOutBtn"),
+      accessBanner: document.getElementById("accessBanner"),
+      editorSection: document.getElementById("editorSection"),
+      coordinatorsNavLink: document.getElementById("coordinatorsNavLink"),
+      sidebarFooterText: document.getElementById("sidebarFooterText"),
+      positiveList: document.getElementById("positiveList"),
+      negativeList: document.getElementById("negativeList"),
+      monthlyPrizeText: document.getElementById("monthlyPrizeText"),
+      negativeRuleText: document.getElementById("negativeRuleText"),
+      riskRuleText: document.getElementById("riskRuleText"),
+      ruleForm: document.getElementById("ruleForm"),
+      ruleTypeInput: document.getElementById("ruleTypeInput"),
+      rulePointsInput: document.getElementById("rulePointsInput"),
+      ruleTitleInput: document.getElementById("ruleTitleInput"),
+      ruleDescriptionInput: document.getElementById("ruleDescriptionInput"),
+      saveRuleBtn: document.getElementById("saveRuleBtn"),
+      ruleStatus: document.getElementById("ruleStatus"),
+      messagesForm: document.getElementById("messagesForm"),
+      monthlyPrizeInput: document.getElementById("monthlyPrizeInput"),
+      negativeRuleInput: document.getElementById("negativeRuleInput"),
+      riskRuleInput: document.getElementById("riskRuleInput"),
+      saveMessagesBtn: document.getElementById("saveMessagesBtn"),
+      messagesStatus: document.getElementById("messagesStatus"),
+      navLinks: Array.from(document.querySelectorAll(".nav-link"))
+    };
+
+    const state = {
+      me: null,
+      myProfile: null,
+      legend: cloneLegend(defaultLegend)
+    };
+
+    bindTransitions();
+    requestAnimationFrame(() => document.body.classList.add("is-ready"));
+
+    els.signOutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
+
+    els.ruleForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!canManage()) return;
+
+      const type = els.ruleTypeInput.value;
+      let points = Number(els.rulePointsInput.value || 0);
+      const title = els.ruleTitleInput.value.trim();
+      const description = els.ruleDescriptionInput.value.trim();
+
+      if (!title || !points) {
+        setStatus(els.ruleStatus, "Completează titlul și punctajul.", "error");
+        return;
+      }
+
+      if (type === "negative" && points > 0) points = -Math.abs(points);
+      if (type === "positive" && points < 0) points = Math.abs(points);
+
+      try {
+        setBusy(true);
+        setStatus(els.ruleStatus, "Salvez regula...");
+        const targetRef = ref(db, `${DB_ROOT}/pointsLegend/${type}`);
+        const itemRef = push(targetRef);
+        await set(itemRef, { points, title, description });
+        els.ruleForm.reset();
+        els.ruleTypeInput.value = "positive";
+        els.rulePointsInput.value = "10";
+        setStatus(els.ruleStatus, "Regula a fost salvată.", "success");
+      } catch (error) {
+        console.error(error);
+        setStatus(els.ruleStatus, "Nu am putut salva regula.", "error");
+      } finally {
+        setBusy(false);
+      }
+    });
+
+    els.messagesForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!canManage()) return;
+
+      try {
+        setBusy(true);
+        setStatus(els.messagesStatus, "Salvez mesajele...");
+        await update(ref(db, `${DB_ROOT}/pointsLegend`), {
+          monthlyPrizeText: els.monthlyPrizeInput.value.trim(),
+          negativeRuleText: els.negativeRuleInput.value.trim(),
+          riskRuleText: els.riskRuleInput.value.trim()
+        });
+        setStatus(els.messagesStatus, "Mesajele au fost salvate.", "success");
+      } catch (error) {
+        console.error(error);
+        setStatus(els.messagesStatus, "Nu am putut salva mesajele.", "error");
+      } finally {
+        setBusy(false);
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      state.me = user;
+      listenToProfile(user.uid);
+      listenToLegend();
+    });
+
+    function bindTransitions() {
+      els.navLinks.forEach((link) => {
+        link.addEventListener("click", (event) => {
+          const href = link.getAttribute("href");
+          if (!href || href.startsWith("#") || link.classList.contains("hidden")) return;
+          event.preventDefault();
+          document.body.classList.remove("is-ready");
+          document.body.classList.add("is-leaving");
+          setTimeout(() => {
+            window.location.href = href;
+          }, 180);
+        });
+      });
+    }
+
+    function listenToProfile(uid) {
+      if (state.me?.isAnonymous) {
+        state.myProfile = { role: "volunteer", fullName: "Voluntar" };
+        renderAccess();
+        return;
+      }
+
+      onValue(ref(db, `${DB_ROOT}/users/${uid}`), (snapshot) => {
+        state.myProfile = snapshot.val() || null;
+        renderAccess();
+      });
+    }
+
+    function listenToLegend() {
+      onValue(ref(db, `${DB_ROOT}/pointsLegend`), (snapshot) => {
+        state.legend = mergeLegend(snapshot.val());
+        renderLegend();
+      });
+    }
+
+    function renderAccess() {
+      const role = state.me?.isAnonymous ? "volunteer" : (state.myProfile?.role || "volunteer");
+      els.currentRole.textContent = `Rol: ${friendlyRole(role)}`;
+      const locked = !canManage();
+
+      els.accessBanner.classList.toggle("show", locked);
+      els.editorSection.classList.toggle("hidden", locked);
+      els.coordinatorsNavLink.classList.toggle("hidden", locked);
+      els.sidebarFooterText.innerHTML = locked
+        ? "Ca voluntar ai acces doar la vizualizare. Legenda punctelor rămâne vizibilă pentru toată lumea."
+        : "Managerii și coordonatorii pot edita legenda punctelor. Schimbările se văd apoi direct în platformă.";
+    }
+
+    function renderLegend() {
+      els.monthlyPrizeText.textContent = state.legend.monthlyPrizeText;
+      els.negativeRuleText.textContent = state.legend.negativeRuleText;
+      els.riskRuleText.textContent = state.legend.riskRuleText;
+
+      els.monthlyPrizeInput.value = state.legend.monthlyPrizeText;
+      els.negativeRuleInput.value = state.legend.negativeRuleText;
+      els.riskRuleInput.value = state.legend.riskRuleText;
+
+      els.positiveList.innerHTML = buildList(state.legend.positive, "positive");
+      els.negativeList.innerHTML = buildList(state.legend.negative, "negative");
+
+      if (canManage()) {
+        document.querySelectorAll("[data-delete-rule]").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            try {
+              setStatus(els.ruleStatus, "Șterg regula...");
+              const type = btn.dataset.type;
+              const id = btn.dataset.deleteRule;
+              await remove(ref(db, `${DB_ROOT}/pointsLegend/${type}/${id}`));
+              setStatus(els.ruleStatus, "Regula a fost ștearsă.", "success");
+            } catch (error) {
+              console.error(error);
+              setStatus(els.ruleStatus, "Nu am putut șterge regula.", "error");
+            }
+          });
+        });
+      }
+    }
+
+    function buildList(group, type) {
+      const items = Object.entries(group || {}).sort((a, b) => {
+        const pa = Number(a[1]?.points || 0);
+        const pb = Number(b[1]?.points || 0);
+        return type === "positive" ? pb - pa : pa - pb;
+      });
+
+      if (!items.length) {
+        return `<div class="rule-note">Nu există reguli încă.</div>`;
+      }
+
+      return items.map(([id, item]) => `
+        <div class="point-card">
+          <div class="point-value ${type === "positive" ? "plus" : "minus"}">${item.points > 0 ? "+" : ""}${item.points}</div>
+          <div>
+            <strong>${escapeHtml(item.title || "Fără titlu")}</strong>
+            <div style="color: var(--muted); font-size: 13px; line-height: 1.5; margin-top: 6px;">
+              ${escapeHtml(item.description || "Fără descriere")}
+            </div>
+          </div>
+          ${canManage() ? `<button class="btn btn-danger" data-delete-rule="${escapeHtml(id)}" data-type="${escapeHtml(type)}">Șterge</button>` : ""}
+        </div>
+      `).join("");
+    }
+
+    function cloneLegend(legend) {
+      return JSON.parse(JSON.stringify(legend));
+    }
+
+    function mergeLegend(data) {
+      if (!data) return cloneLegend(defaultLegend);
+      return {
+        positive: data.positive || defaultLegend.positive,
+        negative: data.negative || defaultLegend.negative,
+        monthlyPrizeText: data.monthlyPrizeText || defaultLegend.monthlyPrizeText,
+        negativeRuleText: data.negativeRuleText || defaultLegend.negativeRuleText,
+        riskRuleText: data.riskRuleText || defaultLegend.riskRuleText
+      };
+    }
+
+    function setBusy(isBusy) {
+      els.saveRuleBtn.disabled = isBusy;
+      els.saveMessagesBtn.disabled = isBusy;
+      els.ruleTypeInput.disabled = isBusy;
+      els.rulePointsInput.disabled = isBusy;
+      els.ruleTitleInput.disabled = isBusy;
+      els.ruleDescriptionInput.disabled = isBusy;
+      els.monthlyPrizeInput.disabled = isBusy;
+      els.negativeRuleInput.disabled = isBusy;
+      els.riskRuleInput.disabled = isBusy;
+    }
+
+    function setStatus(element, text, variant = "") {
+      element.textContent = text;
+      element.className = "status-note" + (variant ? ` ${variant}` : "");
+    }
+
+    function canManage() {
+      return !state.me?.isAnonymous && MANAGER_ROLES.includes(state.myProfile?.role || "");
+    }
+
+    function friendlyRole(role) {
+      if (role === "community_manager") return "Community manager";
+      if (role === "department_coordinator") return "Coordonator departament";
+      return "Voluntar";
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>

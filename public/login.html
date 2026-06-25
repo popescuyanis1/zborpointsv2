@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZBOR HUB Târgu Jiu - Login</title>
+  <style>
+    :root {
+      --bg: #071b2f;
+      --bg-2: #0e3158;
+      --panel: rgba(10, 31, 57, 0.82);
+      --text: #f5fbff;
+      --muted: #c7d9e9;
+      --teal: #12b8b5;
+      --pink: #ef4f95;
+      --blue: #3666d6;
+      --green: #67d87d;
+      --danger: #ff8f9f;
+      --warning: #ffd978;
+      --border: rgba(255,255,255,0.11);
+      --shadow: 0 18px 44px rgba(0,0,0,0.25);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--bg); }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 15%, rgba(18,184,181,0.22), transparent 18%),
+        radial-gradient(circle at 88% 18%, rgba(239,79,149,0.18), transparent 18%),
+        radial-gradient(circle at 55% 88%, rgba(54,102,214,0.18), transparent 24%),
+        linear-gradient(180deg, #12b8b5 0%, #138ea8 18%, #194f9d 52%, #0a2340 100%);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+
+    body.is-ready { opacity: 1; transform: translateY(0); }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      filter: blur(18px);
+      pointer-events: none;
+      opacity: 0.24;
+      z-index: 0;
+    }
+
+    body::before {
+      left: -80px;
+      top: 120px;
+      background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.18) 55%, transparent 72%);
+    }
+
+    body::after {
+      right: -90px;
+      bottom: 70px;
+      background: radial-gradient(circle, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.14) 58%, transparent 74%);
+    }
+
+    button, input { font: inherit; }
+
+    .shell {
+      width: min(1140px, 100%);
+      display: grid;
+      grid-template-columns: 1.06fr 0.94fr;
+      gap: 24px;
+      align-items: stretch;
+      position: relative;
+      z-index: 1;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(11,35,64,0.84), rgba(8,28,53,0.78));
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 30px;
+      backdrop-filter: blur(12px);
+    }
+
+    .hero {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+      background:
+        radial-gradient(circle at 80% 18%, rgba(255,255,255,0.22), transparent 20%),
+        linear-gradient(135deg, rgba(18,184,181,0.22), rgba(54,102,214,0.18) 52%, rgba(239,79,149,0.15) 100%),
+        rgba(8,28,53,0.82);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 800;
+      width: fit-content;
+      margin-bottom: 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .hero h1 {
+      margin: 0 0 12px;
+      font-size: 40px;
+      line-height: 1.06;
+      letter-spacing: 0.01em;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.68;
+      max-width: 62ch;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .hero-pill {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .info-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .info-card {
+      padding: 15px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+    }
+
+    .info-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    .info-card span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.58;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .form-head h2 {
+      margin: 0 0 10px;
+      font-size: 30px;
+    }
+
+    .form-head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.58;
+    }
+
+    .status {
+      margin-top: 18px;
+      padding: 13px 15px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.52;
+    }
+
+    .status.error {
+      border-color: rgba(255,143,159,0.28);
+      color: #ffe6ea;
+      background: rgba(255,143,159,0.10);
+    }
+
+    .status.success {
+      border-color: rgba(103,216,125,0.28);
+      color: #e0ffea;
+      background: rgba(103,216,125,0.10);
+    }
+
+    form {
+      margin-top: 22px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      outline: none;
+    }
+
+    .field input:focus {
+      border-color: rgba(255,255,255,0.24);
+      box-shadow: 0 0 0 3px rgba(18,184,181,0.12);
+    }
+
+    .password-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-wrap input {
+      padding-right: 96px;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 8px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 16px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: 0.18s ease;
+      font-weight: 800;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn:disabled,
+    .password-toggle:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--pink), #ff79b1);
+      color: white;
+      box-shadow: 0 10px 22px rgba(239,79,149,0.25);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.09);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .mini-note {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.58;
+    }
+
+    @media (max-width: 920px) {
+      .shell { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="panel hero">
+      <div>
+        <div class="brand">ZBOR HUB Târgu Jiu</div>
+        <h1>Intră în platforma echipei</h1>
+        <p>
+          Aici vezi activitatea hub-ului, voluntarii, coordonatorii, departamentele și regulile de punctaj.
+          Coordonatorii și managerii pot administra conținutul, iar voluntarii pot intra rapid în modul de vizualizare.
+        </p>
+
+        <div class="hero-badges">
+          <span class="hero-pill">Dashboard live</span>
+          <span class="hero-pill">Voluntari</span>
+          <span class="hero-pill">Punctaj</span>
+          <span class="hero-pill">Coordonatori</span>
+        </div>
+
+        <div class="info-list">
+          <div class="info-card">
+            <strong>Pentru coordonatori și manageri</strong>
+            <span>Folosești emailul și parola, apoi poți administra voluntari, puncte, reguli și setări de departament.</span>
+          </div>
+          <div class="info-card">
+            <strong>Pentru voluntari</strong>
+            <span>Poți intra rapid, fără să completezi date, doar pentru a vedea clasamentele, informațiile și progresul echipei.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hint">
+        Dacă ai probleme la acces, vorbește cu un coordonator sau cu un community manager.
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="form-head">
+        <h2>Autentificare</h2>
+        <p>Intră cu datele tale sau folosește accesul rapid ca voluntar.</p>
+      </div>
+
+      <div class="status" id="authStatus">Pregătesc autentificarea...</div>
+
+      <form id="loginForm">
+        <div class="field">
+          <label for="emailInput">Email</label>
+          <input id="emailInput" type="email" autocomplete="email" required />
+        </div>
+
+        <div class="field">
+          <label for="passwordInput">Parolă</label>
+          <div class="password-wrap">
+            <input id="passwordInput" type="password" autocomplete="current-password" required />
+            <button class="password-toggle" type="button" id="togglePasswordBtn">Arată</button>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" type="submit" id="loginBtn">Intră în cont</button>
+          <button class="btn btn-secondary" type="button" id="guestBtn">Intră ca voluntar</button>
+        </div>
+      </form>
+
+      <div class="mini-note">
+        Voluntarii nu au nevoie de cont dedicat pentru accesul de bază. Pentru administrare, este necesar un profil intern activ.
+      </div>
+    </section>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyCSVheYP870CO0d9kbBGW6xMqS5SeVV_x4",
+  authDomain: "punctevoluntari.firebaseapp.com",
+  databaseURL: "https://punctevoluntari-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "punctevoluntari",
+  storageBucket: "punctevoluntari.firebasestorage.app",
+  messagingSenderId: "1055611698088",
+  appId: "1:1055611698088:web:074cc034009a60cca83b9d",
+  measurementId: "G-B98Y7KMLPJ"
+};
+
+    const DB_ROOT = "zborHubTgJiu";
+    const ALLOWED_ROLES = ["community_manager", "department_coordinator"];
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const els = {
+      authStatus: document.getElementById("authStatus"),
+      loginForm: document.getElementById("loginForm"),
+      emailInput: document.getElementById("emailInput"),
+      passwordInput: document.getElementById("passwordInput"),
+      togglePasswordBtn: document.getElementById("togglePasswordBtn"),
+      loginBtn: document.getElementById("loginBtn"),
+      guestBtn: document.getElementById("guestBtn")
+    };
+
+    let isRedirecting = false;
+
+    requestAnimationFrame(() => document.body.classList.add("is-ready"));
+
+    els.togglePasswordBtn.addEventListener("click", () => {
+      const isPassword = els.passwordInput.type === "password";
+      els.passwordInput.type = isPassword ? "text" : "password";
+      els.togglePasswordBtn.textContent = isPassword ? "Ascunde" : "Arată";
+    });
+
+    els.guestBtn.addEventListener("click", async () => {
+      try {
+        setBusy(true);
+        setStatus("Te conectez ca voluntar...");
+        await signInAnonymously(auth);
+        redirectToDashboard();
+      } catch (error) {
+        console.error(error);
+        setStatus("Intrarea ca voluntar nu este activată încă în Authentication.", "error");
+      } finally {
+        setBusy(false);
+      }
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user || isRedirecting) {
+        if (!user) setStatus("Poți să te autentifici.");
+        return;
+      }
+
+      if (user.isAnonymous) {
+        redirectToDashboard();
+        return;
+      }
+
+      const ok = await validateProfile(user.uid);
+      if (ok) {
+        redirectToDashboard();
+      }
+    });
+
+    els.loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const email = els.emailInput.value.trim();
+      const password = els.passwordInput.value;
+
+      if (!email || !password) {
+        setStatus("Completează emailul și parola.", "error");
+        return;
+      }
+
+      try {
+        setBusy(true);
+        setStatus("Te autentific...");
+        const result = await signInWithEmailAndPassword(auth, email, password);
+        const ok = await validateProfile(result.user.uid);
+        if (ok) {
+          setStatus("Ai intrat cu succes.", "success");
+          redirectToDashboard();
+        }
+      } catch (error) {
+        console.error(error);
+        setStatus(mapAuthError(error.code), "error");
+      } finally {
+        setBusy(false);
+      }
+    });
+
+    async function validateProfile(uid) {
+      try {
+        const snapshot = await get(ref(db, `${DB_ROOT}/users/${uid}`));
+
+        if (!snapshot.exists()) {
+          await safeSignOut();
+          setStatus("Contul există, dar nu este pregătit încă pentru platformă.", "error");
+          return false;
+        }
+
+        const profile = snapshot.val();
+
+        if (!ALLOWED_ROLES.includes(profile.role)) {
+          await safeSignOut();
+          setStatus("Acest formular este doar pentru coordonatori și manageri. Pentru voluntari, folosește butonul de mai sus.", "error");
+          return false;
+        }
+
+        if (profile.activeStatus === false) {
+          await safeSignOut();
+          setStatus("Contul este dezactivat.", "error");
+          return false;
+        }
+
+        return true;
+      } catch (error) {
+        console.error(error);
+        await safeSignOut();
+        setStatus("Nu am putut verifica accesul în acest moment.", "error");
+        return false;
+      }
+    }
+
+    async function safeSignOut() {
+      try {
+        if (auth.currentUser) {
+          await signOut(auth);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    function redirectToDashboard() {
+      if (isRedirecting) return;
+      isRedirecting = true;
+      window.location.href = "index.html";
+    }
+
+    function setBusy(isBusy) {
+      els.loginBtn.disabled = isBusy;
+      els.guestBtn.disabled = isBusy;
+      els.togglePasswordBtn.disabled = isBusy;
+      els.emailInput.disabled = isBusy;
+      els.passwordInput.disabled = isBusy;
+    }
+
+    function mapAuthError(code) {
+      const messages = {
+        "auth/invalid-email": "Email invalid.",
+        "auth/user-disabled": "Cont dezactivat.",
+        "auth/user-not-found": "Nu există cont cu acest email.",
+        "auth/wrong-password": "Parolă greșită.",
+        "auth/invalid-credential": "Email sau parolă greșită.",
+        "auth/too-many-requests": "Prea multe încercări. Încearcă mai târziu.",
+        "auth/admin-restricted-operation": "Autentificarea anonimă nu este permisă momentan.",
+        "auth/network-request-failed": "Probleme de conexiune. Verifică internetul și încearcă din nou."
+      };
+      return messages[code] || "Nu am putut face login. Verifică datele și încearcă din nou.";
+    }
+
+    function setStatus(text, variant = "") {
+      els.authStatus.textContent = text;
+      els.authStatus.className = "status" + (variant ? ` ${variant}` : "");
+    }
+  </script>
+</body>
+</html>

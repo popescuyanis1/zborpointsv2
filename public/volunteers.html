@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZBOR HUB Târgu Jiu - Voluntari</title>
+  <style>
+    :root {
+      --bg: #071b2f;
+      --panel: rgba(10, 31, 57, 0.82);
+      --text: #f5fbff;
+      --muted: #c7d9e9;
+      --teal: #12b8b5;
+      --pink: #ef4f95;
+      --blue: #3666d6;
+      --green: #67d87d;
+      --danger: #ff8f9f;
+      --warning: #ffd978;
+      --border: rgba(255,255,255,0.11);
+      --shadow: 0 18px 44px rgba(0,0,0,0.25);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--bg); }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 15%, rgba(18,184,181,0.22), transparent 18%),
+        radial-gradient(circle at 88% 18%, rgba(239,79,149,0.18), transparent 18%),
+        radial-gradient(circle at 55% 88%, rgba(54,102,214,0.18), transparent 24%),
+        linear-gradient(180deg, #12b8b5 0%, #138ea8 18%, #194f9d 52%, #0a2340 100%);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+
+    body.is-ready { opacity: 1; transform: translateY(0); }
+    body.is-leaving { opacity: 0; transform: translateY(10px); }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      filter: blur(18px);
+      pointer-events: none;
+      opacity: 0.25;
+      z-index: 0;
+    }
+
+    body::before {
+      left: -80px;
+      top: 120px;
+      background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.18) 55%, transparent 72%);
+    }
+
+    body::after {
+      right: -90px;
+      bottom: 70px;
+      background: radial-gradient(circle, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.14) 58%, transparent 74%);
+    }
+
+    button, input, select, textarea { font: inherit; }
+    select option { background: #ffffff; color: #111111; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      position: relative;
+      z-index: 1;
+    }
+
+    .sidebar {
+      background: rgba(7, 24, 43, 0.62);
+      border-right: 1px solid var(--border);
+      padding: 24px 18px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      line-height: 1.02;
+      letter-spacing: 0.02em;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .brand p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .nav-link {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border-radius: 18px;
+      text-decoration: none;
+      font-weight: 700;
+      color: var(--text);
+      border: 1px solid transparent;
+      background: rgba(255,255,255,0.05);
+      transition: 0.18s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.16);
+      transform: translateY(-1px);
+    }
+
+    .nav-link.hidden { display: none; }
+
+    .sidebar-footer {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .main { padding: 24px; }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .page-title h2 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      letter-spacing: 0.01em;
+    }
+
+    .page-title p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 74ch;
+    }
+
+    .toolbar, .control-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .chip {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 16px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: 0.18s ease;
+      font-weight: 800;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--pink), #ff79b1);
+      color: white;
+      box-shadow: 0 10px 22px rgba(239,79,149,0.25);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.09);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-danger {
+      background: rgba(255,143,159,0.14);
+      border: 1px solid rgba(255,143,159,0.28);
+      color: #ffe6ea;
+    }
+
+    .btn:disabled,
+    input:disabled,
+    select:disabled,
+    textarea:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .access-banner {
+      display: none;
+      margin-bottom: 18px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255,217,120,0.10);
+      border: 1px solid rgba(255,217,120,0.24);
+      color: #fff4cf;
+      animation: fadeSlideIn 0.26s ease;
+    }
+
+    .access-banner.show { display: block; }
+    .access-banner strong { display: block; margin-bottom: 6px; font-size: 15px; }
+    .access-banner span { color: #f7e7b8; font-size: 13px; line-height: 1.5; }
+
+    .grid-4, .grid-3, .grid-2 {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-2 { grid-template-columns: 1.08fr 0.92fr; }
+
+    .card {
+      background: linear-gradient(180deg, rgba(11,35,64,0.84), rgba(8,28,53,0.78));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      transition: transform 0.22s ease, border-color 0.22s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    .accent-card {
+      background:
+        radial-gradient(circle at 80% 18%, rgba(255,255,255,0.22), transparent 20%),
+        linear-gradient(135deg, rgba(18,184,181,0.22), rgba(54,102,214,0.18) 52%, rgba(239,79,149,0.15) 100%),
+        rgba(8,28,53,0.82);
+    }
+
+    .stat-card {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(7, 29, 53, 0.85);
+      border: 1px solid var(--border);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    .stat-label { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+    .stat-value { font-size: 32px; font-weight: 800; }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .section-head h3 { margin: 0; font-size: 20px; }
+    .section-head p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .stack { display: flex; flex-direction: column; gap: 12px; }
+
+    .helper-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .helper-row input,
+    .helper-row select {
+      min-width: 180px;
+    }
+
+    .row-card {
+      display: grid;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      animation: fadeSlideIn 0.24s ease;
+      transition: transform 0.18s ease, border-color 0.18s ease;
+    }
+
+    .row-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    .volunteer-row { grid-template-columns: 56px 1fr auto; }
+    .history-row { grid-template-columns: 1fr auto; }
+
+    .avatar-box {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(18,184,181,0.36), rgba(239,79,149,0.30));
+      font-size: 18px;
+      font-weight: 800;
+      color: white;
+    }
+
+    .row-main {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .row-main strong { font-size: 15px; }
+    .row-sub { color: var(--muted); font-size: 13px; line-height: 1.45; }
+
+    .badge-wrap {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+      align-items: center;
+    }
+
+    .mini-badge,
+    .pill-soft,
+    .pill-points,
+    .pill-score,
+    .pill-risk,
+    .pill-critical {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .mini-badge {
+      background: rgba(18,184,181,0.12);
+      border: 1px solid rgba(18,184,181,0.20);
+      color: #dcfff4;
+    }
+
+    .pill-soft {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .pill-points {
+      background: rgba(54,102,214,0.24);
+      border: 1px solid rgba(54,102,214,0.25);
+      color: #eef4ff;
+    }
+
+    .pill-score {
+      background: rgba(103,216,125,0.14);
+      border: 1px solid rgba(103,216,125,0.20);
+      color: #dcffe5;
+    }
+
+    .pill-risk {
+      background: rgba(255,217,120,0.14);
+      border: 1px solid rgba(255,217,120,0.24);
+      color: #fff0bf;
+    }
+
+    .pill-critical {
+      background: rgba(255,143,159,0.14);
+      border: 1px solid rgba(255,143,159,0.24);
+      color: #ffe6ea;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .field label { color: var(--muted); font-size: 13px; }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 12px 13px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .formula-box {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .note {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .note.error {
+      border-color: rgba(255,143,159,0.28);
+      color: #ffe6ea;
+      background: rgba(255,143,159,0.10);
+    }
+
+    .note.success {
+      border-color: rgba(103,216,125,0.28);
+      color: #e0ffea;
+      background: rgba(103,216,125,0.10);
+    }
+
+    .empty {
+      padding: 20px;
+      border-radius: 18px;
+      border: 1px dashed rgba(255,255,255,0.18);
+      color: var(--muted);
+      text-align: center;
+      animation: fadeSlideIn 0.24s ease;
+    }
+
+    .hidden { display: none !important; }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 1180px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .nav { display: grid; grid-template-columns: repeat(5, 1fr); }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .grid-3, .grid-2, .detail-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      .main { padding: 18px; }
+      .nav { grid-template-columns: 1fr; }
+      .field-grid, .detail-grid { grid-template-columns: 1fr; }
+      .volunteer-row, .history-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>ZBOR HUB Târgu Jiu</h1>
+        <p>Gestionezi voluntarii, punctele și istoricul dintr-o singură pagină. Punctajul lunar este calculat direct din acțiunile salvate.</p>
+      </div>
+
+      <nav class="nav">
+        <a class="nav-link" href="index.html">Dashboard</a>
+        <a class="nav-link" href="departments.html">Departamente</a>
+        <a class="nav-link active" href="volunteers.html">Voluntari</a>
+        <a class="nav-link" href="puncte.html">Legenda punctelor</a>
+        <a class="nav-link" href="users.html" id="coordinatorsNavLink">Coordonatori</a>
+      </nav>
+
+      <div class="sidebar-footer" id="sidebarFooterText">
+        Managerii și coordonatorii pot administra voluntarii și acțiunile.<br>
+        Voluntarii pot vedea totul, dar nu pot modifica nimic.
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="page-title">
+          <h2>Voluntari</h2>
+          <p>Adaugi voluntari, dai sau scazi puncte, vezi istoricul și urmărești riscul lunar fără să folosești ID-uri manuale.</p>
+        </div>
+        <div class="toolbar">
+          <span class="chip" id="monthChip">Luna curentă</span>
+          <span class="chip" id="currentRole">Rol: necunoscut</span>
+          <button class="btn btn-secondary" id="signOutBtn">Ieșire</button>
+        </div>
+      </header>
+
+      <div class="access-banner" id="accessBanner">
+        <strong>Ai acces doar în modul de vizualizare</strong>
+        <span>Poți vedea profilurile, punctele, istoricul și statusul de risc, dar nu poți adăuga, edita sau șterge date.</span>
+      </div>
+
+      <section class="card accent-card" style="margin-bottom: 18px;">
+        <div class="section-head">
+          <div>
+            <h3>Status lunar al voluntarilor</h3>
+            <p>Se compară doar voluntarii activi care au avut activitate în luna aceasta</p>
+          </div>
+        </div>
+        <div class="detail-grid">
+          <div class="stat-card"><div class="stat-label">Nivelul echipei</div><div class="stat-value" id="metricMedian">0</div></div>
+          <div class="stat-card"><div class="stat-label">Diferență normală</div><div class="stat-value" id="metricMad">0</div></div>
+          <div class="stat-card"><div class="stat-label">Limită atenție</div><div class="stat-value" id="metricRisk">0</div></div>
+          <div class="stat-card"><div class="stat-label">Limită critică</div><div class="stat-value" id="metricCritical">0</div></div>
+        </div>
+        <div class="formula-box">
+          Sistemul compară punctele din luna aceasta doar între voluntarii activi care au avut activitate.
+          Dacă cineva este în zona normală apare OK. Dacă este sub nivelul obișnuit apare Atenție.
+          Dacă este mult sub nivel sau are mai multe penalizări apare Monitorizare.
+          Dacă nu are deloc activitate luna asta apare Neactualizat.
+        </div>
+      </section>
+
+      <section class="grid-4">
+        <div class="stat-card">
+          <div class="stat-label">Voluntari activi</div>
+          <div class="stat-value" id="statActive">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Voluntari inactivi</div>
+          <div class="stat-value" id="statInactive">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Puncte luna asta</div>
+          <div class="stat-value" id="statPoints">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Acțiuni totale</div>
+          <div class="stat-value" id="statActions">0</div>
+        </div>
+      </section>
+
+      <section class="grid-2" style="margin-top: 18px;">
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <h3>Lista voluntarilor</h3>
+              <p>Cauți după nume și filtrezi după departament sau status</p>
+            </div>
+          </div>
+
+          <div class="helper-row">
+            <input id="searchInput" type="text" placeholder="Caută după nume" />
+            <div class="control-row">
+              <select id="departmentFilter">
+                <option value="all">Toate departamentele</option>
+                <option value="HR">HR</option>
+                <option value="PR si Comunicare">PR si Comunicare</option>
+                <option value="Creatie si Implementare">Creatie si Implementare</option>
+              </select>
+              <select id="statusFilter">
+                <option value="all">Toate statusurile</option>
+                <option value="active">Doar activi</option>
+                <option value="inactive">Doar inactivi</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="stack" id="volunteersList"></div>
+        </div>
+
+        <div class="stack">
+          <div class="card" id="volunteerFormCard">
+            <div class="section-head">
+              <div>
+                <h3 id="formTitle">Adaugă voluntar</h3>
+                <p>Completezi doar datele reale. Codul intern se generează automat.</p>
+              </div>
+            </div>
+
+            <form id="volunteerForm">
+              <div class="field-grid">
+                <div class="field">
+                  <label for="fullNameInput">Nume complet</label>
+                  <input id="fullNameInput" type="text" placeholder="Ex: Andrei Popescu" required />
+                </div>
+                <div class="field">
+                  <label for="departmentInput">Departament</label>
+                  <select id="departmentInput" required>
+                    <option value="HR">HR</option>
+                    <option value="PR si Comunicare">PR si Comunicare</option>
+                    <option value="Creatie si Implementare">Creatie si Implementare</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field-grid">
+                <div class="field">
+                  <label for="statusInput">Status</label>
+                  <select id="statusInput" required>
+                    <option value="true">Activ</option>
+                    <option value="false">Inactiv</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="avatarInput">Inițiale afișate</label>
+                  <input id="avatarInput" type="text" placeholder="Se completează automat dacă lași gol" maxlength="4" />
+                </div>
+              </div>
+
+              <div class="toolbar">
+                <button class="btn btn-primary" type="submit" id="saveVolunteerBtn">Salvează voluntarul</button>
+                <button class="btn btn-secondary" type="button" id="resetFormBtn">Voluntar nou</button>
+              </div>
+            </form>
+
+            <div class="note" id="formStatus">Voluntarii sunt gestionați manual de coordonatori și manageri.</div>
+          </div>
+
+          <div class="card" id="actionFormCard">
+            <div class="section-head">
+              <div>
+                <h3>Puncte și istoric</h3>
+                <p>Motivul și descrierea rămân salvate în istoric</p>
+              </div>
+            </div>
+
+            <form id="actionForm">
+              <div class="field-grid">
+                <div class="field">
+                  <label for="actionVolunteerInput">Voluntar</label>
+                  <select id="actionVolunteerInput"></select>
+                </div>
+                <div class="field">
+                  <label for="actionTypeInput">Tip acțiune</label>
+                  <select id="actionTypeInput">
+                    <option value="participare">Participare</option>
+                    <option value="punctualitate">Punctualitate</option>
+                    <option value="task">Task rezolvat</option>
+                    <option value="initiativa">Inițiativă</option>
+                    <option value="impact">Impact</option>
+                    <option value="cross-team">Ajutor inter-departamental</option>
+                    <option value="bonus">Bonus</option>
+                    <option value="penalizare">Penalizare</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field-grid">
+                <div class="field">
+                  <label for="actionPointsInput">Puncte</label>
+                  <input id="actionPointsInput" type="number" value="10" min="-500" required />
+                </div>
+                <div class="field">
+                  <label for="actionReasonInput">Motiv scurt</label>
+                  <input id="actionReasonInput" type="text" placeholder="Ex: implicare foarte bună la activitate" required />
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="actionDescriptionInput">Descriere</label>
+                <textarea id="actionDescriptionInput" placeholder="Detalii mai scurte sau mai clare despre ce s-a întâmplat"></textarea>
+              </div>
+
+              <div class="toolbar">
+                <button class="btn btn-primary" type="submit" id="saveActionBtn">Salvează acțiunea</button>
+              </div>
+            </form>
+
+            <div class="note" id="actionStatus">Topul de pe dashboard și riscul lunar se actualizează automat după fiecare acțiune.</div>
+          </div>
+
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <h3>Detalii voluntar</h3>
+                <p>Puncte, risc, interval personalizat și istoric</p>
+              </div>
+            </div>
+            <div id="selectedVolunteerDetails"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+    import { getDatabase, ref, onValue, set, remove, push } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyCSVheYP870CO0d9kbBGW6xMqS5SeVV_x4",
+  authDomain: "punctevoluntari.firebaseapp.com",
+  databaseURL: "https://punctevoluntari-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "punctevoluntari",
+  storageBucket: "punctevoluntari.firebasestorage.app",
+  messagingSenderId: "1055611698088",
+  appId: "1:1055611698088:web:074cc034009a60cca83b9d",
+  measurementId: "G-B98Y7KMLPJ"
+};
+    const DB_ROOT = "zborHubTgJiu";
+    const MANAGER_ROLES = ["community_manager", "department_coordinator"];
+
+    const badgeDefinitions = [
+      { name: "Primul Zbor", test: (m) => m.actionCount >= 1 },
+      { name: "Punctual", test: (m) => m.actionTypes.punctualitate >= 3 },
+      { name: "Fixer", test: (m) => m.actionTypes.task >= 3 },
+      { name: "Energizer", test: (m) => m.monthlyPoints >= 50 },
+      { name: "Brainstormer", test: (m) => m.actionTypes.initiativa >= 2 },
+      { name: "Team Player", test: (m) => m.actionTypes["cross-team"] >= 2 },
+      { name: "Gold Level", test: (m) => m.totalPoints >= 250 },
+      { name: "Elite", test: (m) => m.totalPoints >= 500 }
+    ];
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const els = {
+      monthChip: document.getElementById("monthChip"),
+      currentRole: document.getElementById("currentRole"),
+      signOutBtn: document.getElementById("signOutBtn"),
+      accessBanner: document.getElementById("accessBanner"),
+      coordinatorsNavLink: document.getElementById("coordinatorsNavLink"),
+      sidebarFooterText: document.getElementById("sidebarFooterText"),
+      metricMedian: document.getElementById("metricMedian"),
+      metricMad: document.getElementById("metricMad"),
+      metricRisk: document.getElementById("metricRisk"),
+      metricCritical: document.getElementById("metricCritical"),
+      statActive: document.getElementById("statActive"),
+      statInactive: document.getElementById("statInactive"),
+      statPoints: document.getElementById("statPoints"),
+      statActions: document.getElementById("statActions"),
+      searchInput: document.getElementById("searchInput"),
+      departmentFilter: document.getElementById("departmentFilter"),
+      statusFilter: document.getElementById("statusFilter"),
+      volunteersList: document.getElementById("volunteersList"),
+      volunteerFormCard: document.getElementById("volunteerFormCard"),
+      volunteerForm: document.getElementById("volunteerForm"),
+      formTitle: document.getElementById("formTitle"),
+      fullNameInput: document.getElementById("fullNameInput"),
+      departmentInput: document.getElementById("departmentInput"),
+      statusInput: document.getElementById("statusInput"),
+      avatarInput: document.getElementById("avatarInput"),
+      saveVolunteerBtn: document.getElementById("saveVolunteerBtn"),
+      resetFormBtn: document.getElementById("resetFormBtn"),
+      formStatus: document.getElementById("formStatus"),
+      actionFormCard: document.getElementById("actionFormCard"),
+      actionForm: document.getElementById("actionForm"),
+      actionVolunteerInput: document.getElementById("actionVolunteerInput"),
+      actionTypeInput: document.getElementById("actionTypeInput"),
+      actionPointsInput: document.getElementById("actionPointsInput"),
+      actionReasonInput: document.getElementById("actionReasonInput"),
+      actionDescriptionInput: document.getElementById("actionDescriptionInput"),
+      saveActionBtn: document.getElementById("saveActionBtn"),
+      actionStatus: document.getElementById("actionStatus"),
+      selectedVolunteerDetails: document.getElementById("selectedVolunteerDetails"),
+      navLinks: Array.from(document.querySelectorAll(".nav-link"))
+    };
+
+    const state = {
+      me: null,
+      myProfile: null,
+      volunteers: [],
+      actions: [],
+      selectedVolunteerId: "",
+      editingVolunteerId: null,
+      selectedRangeStart: getMonthStartInputValue(),
+      selectedRangeEnd: getTodayInputValue(),
+      busy: false
+    };
+
+    bindTransitions();
+    requestAnimationFrame(() => document.body.classList.add("is-ready"));
+    renderMonthChip();
+
+    els.signOutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
+
+    els.searchInput.addEventListener("input", renderVolunteers);
+    els.departmentFilter.addEventListener("change", renderVolunteers);
+    els.statusFilter.addEventListener("change", renderVolunteers);
+    els.resetFormBtn.addEventListener("click", () => resetForm(true));
+
+    els.volunteerForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!canManageVolunteers() || state.busy) return;
+
+      const fullName = els.fullNameInput.value.trim();
+      const department = els.departmentInput.value;
+      const activeStatus = els.statusInput.value === "true";
+      const avatar = (els.avatarInput.value.trim() || getAvatar(fullName || "V")).toUpperCase();
+
+      if (!fullName) {
+        setStatus(els.formStatus, "Numele este obligatoriu.", "error");
+        return;
+      }
+
+      try {
+        setBusy(true);
+        const existing = state.editingVolunteerId
+          ? state.volunteers.find((v) => v.id === state.editingVolunteerId)
+          : null;
+
+        if (existing) {
+          const metrics = getVolunteerAggregate(existing.id, state.actions);
+          await set(ref(db, `${DB_ROOT}/volunteers/${existing.id}`), {
+            ...serializeVolunteer(existing),
+            fullName,
+            department,
+            avatar,
+            activeStatus,
+            ...metrics
+          });
+          state.selectedVolunteerId = existing.id;
+          setStatus(els.formStatus, `Ai actualizat voluntarul ${fullName}.`, "success");
+        } else {
+          const newRef = push(ref(db, `${DB_ROOT}/volunteers`));
+          const id = newRef.key;
+          await set(newRef, {
+            id,
+            fullName,
+            department,
+            avatar,
+            activeStatus,
+            totalPoints: 0,
+            monthlyPoints: 0,
+            streakDays: 0,
+            badges: [],
+            actionCount: 0,
+            role: "volunteer",
+            createdAt: new Date().toISOString()
+          });
+          state.selectedVolunteerId = id;
+          setStatus(els.formStatus, `Ai adăugat voluntarul ${fullName}.`, "success");
+        }
+
+        resetForm(false);
+      } catch (error) {
+        console.error(error);
+        setStatus(els.formStatus, "Nu am putut salva voluntarul.", "error");
+      } finally {
+        setBusy(false);
+      }
+    });
+
+    els.actionForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!canManageVolunteers() || state.busy) return;
+
+      const volunteerId = els.actionVolunteerInput.value;
+      const type = els.actionTypeInput.value;
+      const points = Number(els.actionPointsInput.value || 0);
+      const reason = els.actionReasonInput.value.trim();
+      const description = els.actionDescriptionInput.value.trim();
+
+      if (!volunteerId || !reason || !points) {
+        setStatus(els.actionStatus, "Completează voluntarul, punctajul și motivul.", "error");
+        return;
+      }
+
+      const volunteer = state.volunteers.find((v) => v.id === volunteerId);
+      if (!volunteer) {
+        setStatus(els.actionStatus, "Voluntarul selectat nu există.", "error");
+        return;
+      }
+
+      try {
+        setBusy(true);
+
+        const actionRef = push(ref(db, `${DB_ROOT}/actions`));
+        const action = {
+          id: actionRef.key,
+          volunteerId,
+          type,
+          points,
+          reason,
+          description,
+          createdByUid: state.me?.uid || "",
+          createdByName: state.myProfile?.fullName || "Coordonator",
+          createdAt: new Date().toISOString()
+        };
+
+        const newActions = [...state.actions, action];
+        const metrics = getVolunteerAggregate(volunteerId, newActions);
+
+        await set(actionRef, action);
+        await set(ref(db, `${DB_ROOT}/volunteers/${volunteerId}`), {
+          ...serializeVolunteer(volunteer),
+          ...metrics
+        });
+
+        state.selectedVolunteerId = volunteerId;
+        setStatus(els.actionStatus, "Acțiunea a fost salvată.", "success");
+        els.actionForm.reset();
+        els.actionTypeInput.value = "participare";
+        els.actionPointsInput.value = "10";
+        syncActionVolunteerWithSelected();
+      } catch (error) {
+        console.error(error);
+        setStatus(els.actionStatus, "Nu am putut salva acțiunea.", "error");
+      } finally {
+        setBusy(false);
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      state.me = user;
+
+      if (user.isAnonymous) {
+        state.myProfile = { role: "volunteer", fullName: "Voluntar" };
+        applyAccessMode();
+      } else {
+        listenToMyProfile(user.uid);
+      }
+
+      listenToVolunteers();
+      listenToActions();
+    });
+
+    function bindTransitions() {
+      els.navLinks.forEach((link) => {
+        link.addEventListener("click", (event) => {
+          const href = link.getAttribute("href");
+          if (!href || href.startsWith("#") || link.classList.contains("hidden")) return;
+          event.preventDefault();
+          document.body.classList.remove("is-ready");
+          document.body.classList.add("is-leaving");
+          setTimeout(() => { window.location.href = href; }, 180);
+        });
+      });
+    }
+
+    function renderMonthChip() {
+      const label = new Date().toLocaleDateString("ro-RO", {
+        month: "long",
+        year: "numeric"
+      });
+      els.monthChip.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+    }
+
+    function listenToMyProfile(uid) {
+      onValue(ref(db, `${DB_ROOT}/users/${uid}`), (snapshot) => {
+        state.myProfile = snapshot.val() || null;
+        applyAccessMode();
+      });
+    }
+
+    function applyAccessMode() {
+      const role = state.me?.isAnonymous ? "volunteer" : (state.myProfile?.role || "volunteer");
+      els.currentRole.textContent = `Rol: ${friendlyRole(role)}`;
+
+      const locked = !canManageVolunteers();
+      els.accessBanner.classList.toggle("show", locked);
+      els.coordinatorsNavLink.classList.toggle("hidden", locked);
+      els.volunteerFormCard.classList.toggle("hidden", locked);
+      els.actionFormCard.classList.toggle("hidden", locked);
+
+      els.sidebarFooterText.innerHTML = locked
+        ? "Ca voluntar ai acces doar la vizualizare. Punctele, riscul și istoricul rămân vizibile."
+        : "Managerii și coordonatorii pot administra voluntarii și acțiunile. Riscul lunar se actualizează automat.";
+    }
+
+    function listenToVolunteers() {
+      onValue(ref(db, `${DB_ROOT}/volunteers`), (snapshot) => {
+        state.volunteers = Object.values(snapshot.val() || {})
+          .map(normalizeVolunteer)
+          .sort((a, b) => a.fullName.localeCompare(b.fullName, "ro"));
+
+        if (!state.selectedVolunteerId && state.volunteers[0]) {
+          state.selectedVolunteerId = state.volunteers[0].id;
+        }
+
+        if (state.selectedVolunteerId && !state.volunteers.some((v) => v.id === state.selectedVolunteerId)) {
+          state.selectedVolunteerId = state.volunteers[0]?.id || "";
+        }
+
+        renderPage();
+      });
+    }
+
+    function listenToActions() {
+      onValue(ref(db, `${DB_ROOT}/actions`), (snapshot) => {
+        state.actions = Object.values(snapshot.val() || {})
+          .map(normalizeAction)
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        renderPage();
+      });
+    }
+
+    function renderPage() {
+      renderStats();
+      renderRiskMetrics();
+      renderVolunteers();
+      populateVolunteerSelects();
+      renderSelectedVolunteer();
+      updateFormMode();
+    }
+
+    function renderStats() {
+      const active = state.volunteers.filter((v) => v.activeStatus).length;
+      const inactive = state.volunteers.length - active;
+      const totalMonthlyPoints = state.volunteers
+        .filter((v) => v.activeStatus)
+        .reduce((sum, v) => sum + getMonthlyPoints(v.id), 0);
+
+      els.statActive.textContent = active;
+      els.statInactive.textContent = inactive;
+      els.statPoints.textContent = totalMonthlyPoints;
+      els.statActions.textContent = state.actions.length;
+    }
+
+    function renderRiskMetrics() {
+      const metrics = getMonthlyRiskMetrics();
+      els.metricMedian.textContent = metrics.median;
+      els.metricMad.textContent = metrics.mad;
+      els.metricRisk.textContent = metrics.riskLimit;
+      els.metricCritical.textContent = metrics.criticalLimit;
+    }
+
+    function renderVolunteers() {
+      const departmentFilter = els.departmentFilter.value;
+      const statusFilter = els.statusFilter.value;
+      const search = els.searchInput.value.trim().toLowerCase();
+
+      const rows = state.volunteers.filter((v) => {
+        const departmentOk = departmentFilter === "all" || v.department === departmentFilter;
+        const statusOk =
+          statusFilter === "all" ||
+          (statusFilter === "active" && v.activeStatus) ||
+          (statusFilter === "inactive" && !v.activeStatus);
+        const searchOk = !search || v.fullName.toLowerCase().includes(search);
+        return departmentOk && statusOk && searchOk;
+      });
+
+      els.volunteersList.innerHTML = rows.length
+        ? rows
+            .sort((a, b) =>
+              getMonthlyPoints(b.id) - getMonthlyPoints(a.id) ||
+              b.totalPoints - a.totalPoints ||
+              a.fullName.localeCompare(b.fullName, "ro")
+            )
+            .map((v) => `
+              <div class="row-card volunteer-row">
+                <div class="avatar-box">${escapeHtml(v.avatar || getAvatar(v.fullName))}</div>
+                <div class="row-main">
+                  <strong>${escapeHtml(v.fullName)}</strong>
+                  <div class="row-sub">${escapeHtml(v.department)} • ${v.activeStatus ? "activ" : "inactiv"}</div>
+                  <div class="badge-wrap">
+                    <span class="pill-points">${getMonthlyPoints(v.id)} p luna asta</span>
+                    <span class="pill-soft">${v.totalPoints} p total</span>
+                    <span class="${getVolunteerRiskStatus(v.id).className}">${getVolunteerRiskStatus(v.id).label}</span>
+                    ${(v.badges || []).slice(0, 2).map((badge) => `<span class="mini-badge">${escapeHtml(badge)}</span>`).join("")}
+                  </div>
+                </div>
+                <div class="toolbar">
+                  <button class="btn btn-secondary" data-action="view" data-id="${escapeHtml(v.id)}">Vezi</button>
+                  <button class="btn btn-secondary ${canManageVolunteers() ? "" : "hidden"}" data-action="edit" data-id="${escapeHtml(v.id)}">Editează</button>
+                  <button class="btn btn-danger ${canManageVolunteers() ? "" : "hidden"}" data-action="delete" data-id="${escapeHtml(v.id)}">Șterge</button>
+                </div>
+              </div>
+            `).join("")
+        : empty("Nu există voluntari care să corespundă filtrului.");
+
+      els.volunteersList.querySelectorAll("button[data-action='view']").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.selectedVolunteerId = btn.dataset.id;
+          syncActionVolunteerWithSelected();
+          renderSelectedVolunteer();
+        });
+      });
+
+      if (canManageVolunteers()) {
+        els.volunteersList.querySelectorAll("button[data-action='edit']").forEach((btn) => {
+          btn.addEventListener("click", () => editVolunteer(btn.dataset.id));
+        });
+
+        els.volunteersList.querySelectorAll("button[data-action='delete']").forEach((btn) => {
+          btn.addEventListener("click", () => deleteVolunteer(btn.dataset.id));
+        });
+      }
+    }
+
+    function populateVolunteerSelects() {
+      const options = state.volunteers
+        .map((v) => `<option value="${escapeHtml(v.id)}">${escapeHtml(v.fullName)} • ${escapeHtml(v.department)}</option>`)
+        .join("");
+
+      const previousActionVolunteer = els.actionVolunteerInput.value;
+      els.actionVolunteerInput.innerHTML = options;
+
+      if (state.volunteers.some((v) => v.id === previousActionVolunteer)) {
+        els.actionVolunteerInput.value = previousActionVolunteer;
+      } else {
+        syncActionVolunteerWithSelected();
+      }
+    }
+
+    function syncActionVolunteerWithSelected() {
+      if (state.selectedVolunteerId && state.volunteers.some((v) => v.id === state.selectedVolunteerId)) {
+        els.actionVolunteerInput.value = state.selectedVolunteerId;
+      }
+    }
+
+    
+function renderSelectedVolunteer() {
+      const v = state.volunteers.find((item) => item.id === state.selectedVolunteerId);
+      if (!v) {
+        els.selectedVolunteerDetails.innerHTML = empty("Selectează un voluntar.");
+        return;
+      }
+
+      const metrics = getMonthlyRiskMetrics();
+      const monthlyScore = getMonthlyPoints(v.id);
+      const monthlyActionCount = getMonthlyActionCount(v.id);
+      const monthlyPenaltyCount = getMonthlyPenaltyCount(v.id);
+      const lastActionAt = getLastActionAt(v.id);
+      const risk = getVolunteerRiskStatus(v.id, metrics);
+      const rangeStart = state.selectedRangeStart || getMonthStartInputValue();
+      const rangeEnd = state.selectedRangeEnd || getTodayInputValue();
+      const rangeActions = getActionsForRange(v.id, rangeStart, rangeEnd);
+      const rangePoints = rangeActions.reduce((sum, action) => sum + Number(action.points || 0), 0);
+      const rangeAverage = rangeActions.length ? round2(rangePoints / rangeActions.length) : 0;
+
+      const recentActions = state.actions
+        .filter((a) => a.volunteerId === v.id)
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      const managerControlHtml = canManageVolunteers() ? `
+        <div class="note" style="margin-top: 14px;">
+          <strong>Control intern</strong><br>
+          Etichetă internă: ${escapeHtml(risk.internalStatus)}<br>
+          Motiv principal: ${escapeHtml(risk.managerReason)}<br>
+          Activitate luna asta: ${monthlyActionCount} acțiuni<br>
+          Penalizări luna asta: ${monthlyPenaltyCount}<br>
+          Ultima activitate: ${lastActionAt ? formatDate(lastActionAt) : "niciuna"}
+        </div>
+      ` : "";
+
+      els.selectedVolunteerDetails.innerHTML = `
+        <div class="detail-grid">
+          <div class="stat-card"><div class="stat-label">Puncte totale</div><div class="stat-value">${v.totalPoints}</div></div>
+          <div class="stat-card"><div class="stat-label">Puncte luna asta</div><div class="stat-value">${monthlyScore}</div></div>
+          <div class="stat-card"><div class="stat-label">Acțiuni luna asta</div><div class="stat-value">${monthlyActionCount}</div></div>
+          <div class="stat-card"><div class="stat-label">Status public</div><div class="stat-value">${risk.shortLabel}</div></div>
+        </div>
+
+        <div class="note" style="margin-top: 14px;">
+          <strong>${escapeHtml(v.fullName)}</strong><br>
+          Departament: ${escapeHtml(v.department)}<br>
+          Status: ${v.activeStatus ? "activ" : "inactiv"}<br>
+          Badge-uri: ${(v.badges || []).length ? v.badges.map(escapeHtml).join(", ") : "niciunul"}<br>
+          Limită atenție: ${metrics.riskLimit} p<br>
+          Limită critică: ${metrics.criticalLimit} p
+        </div>
+
+        <div class="formula-box">
+          ${escapeHtml(v.fullName)} are luna aceasta ${monthlyScore} puncte și statusul public este ${risk.label}.
+          Comparația se face doar cu voluntarii activi care au avut activitate în luna curentă.
+        </div>
+
+        ${managerControlHtml}
+
+        <div class="card" style="margin-top: 14px; padding: 16px;">
+          <div class="section-head">
+            <div>
+              <h3>Interval personalizat</h3>
+              <p>Alege perioada și vezi exact câte puncte a luat voluntarul în acel interval.</p>
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="rangeStartInput">Data început</label>
+              <input id="rangeStartInput" type="date" value="${rangeStart}" />
+            </div>
+            <div class="field">
+              <label for="rangeEndInput">Data sfârșit</label>
+              <input id="rangeEndInput" type="date" value="${rangeEnd}" />
+            </div>
+          </div>
+
+          <div class="detail-grid" style="margin-top: 8px;">
+            <div class="stat-card"><div class="stat-label">Puncte pe interval</div><div class="stat-value">${rangePoints}</div></div>
+            <div class="stat-card"><div class="stat-label">Acțiuni pe interval</div><div class="stat-value">${rangeActions.length}</div></div>
+            <div class="stat-card"><div class="stat-label">Medie / acțiune</div><div class="stat-value">${rangeAverage}</div></div>
+            <div class="stat-card"><div class="stat-label">Penalizări luna asta</div><div class="stat-value">${monthlyPenaltyCount}</div></div>
+          </div>
+        </div>
+
+        <div class="stack" style="margin-top: 14px;">
+          ${recentActions.length ? recentActions.map((action) => `
+            <div class="row-card history-row">
+              <div class="row-main">
+                <strong>${escapeHtml(action.reason)}</strong>
+                <div class="row-sub">${escapeHtml(action.description || "Fără descriere")} • ${escapeHtml(action.type)} • ${formatDate(action.createdAt)}</div>
+              </div>
+              <div class="toolbar">
+                <div class="pill-points">${action.points >= 0 ? "+" : ""}${action.points} p</div>
+                ${canManageVolunteers() ? `<button class="btn btn-danger" data-delete-action="${escapeHtml(action.id)}">Șterge</button>` : ""}
+              </div>
+            </div>
+          `).join("") : empty("Nu există acțiuni pentru acest voluntar.")}
+        </div>
+      `;
+
+      const startInput = document.getElementById("rangeStartInput");
+      const endInput = document.getElementById("rangeEndInput");
+
+      if (startInput) {
+        startInput.addEventListener("change", () => {
+          state.selectedRangeStart = startInput.value || getMonthStartInputValue();
+          renderSelectedVolunteer();
+        });
+      }
+
+      if (endInput) {
+        endInput.addEventListener("change", () => {
+          state.selectedRangeEnd = endInput.value || getTodayInputValue();
+          renderSelectedVolunteer();
+        });
+      }
+
+      if (canManageVolunteers()) {
+        els.selectedVolunteerDetails.querySelectorAll("button[data-delete-action]").forEach((btn) => {
+          btn.addEventListener("click", () => deleteAction(btn.dataset.deleteAction, v.id));
+        });
+      }
+    }
+
+function editVolunteer(id) {
+      const v = state.volunteers.find((item) => item.id === id);
+      if (!v) return;
+
+      state.editingVolunteerId = v.id;
+      state.selectedVolunteerId = v.id;
+      els.fullNameInput.value = v.fullName || "";
+      els.departmentInput.value = v.department || "HR";
+      els.statusInput.value = v.activeStatus ? "true" : "false";
+      els.avatarInput.value = v.avatar || "";
+      updateFormMode();
+      syncActionVolunteerWithSelected();
+      setStatus(els.formStatus, `Editezi voluntarul: ${v.fullName}.`);
+    }
+
+    async function deleteVolunteer(id) {
+      if (!canManageVolunteers() || state.busy) return;
+
+      const current = state.volunteers.find((v) => v.id === id);
+      const ok = window.confirm(`Vrei să ștergi voluntarul ${current?.fullName || "selectat"}? Istoricul acțiunilor rămâne salvat separat.`);
+      if (!ok) return;
+
+      try {
+        setBusy(true);
+        await remove(ref(db, `${DB_ROOT}/volunteers/${id}`));
+
+        if (state.selectedVolunteerId === id) {
+          state.selectedVolunteerId = "";
+        }
+        if (state.editingVolunteerId === id) {
+          resetForm(false);
+        }
+
+        setStatus(els.formStatus, "Voluntarul a fost șters.", "success");
+      } catch (error) {
+        console.error(error);
+        setStatus(els.formStatus, "Nu am putut șterge voluntarul.", "error");
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function deleteAction(actionId, volunteerId) {
+      if (!canManageVolunteers() || state.busy) return;
+
+      const action = state.actions.find((a) => a.id === actionId);
+      if (!action) return;
+
+      const volunteer = state.volunteers.find((v) => v.id === volunteerId);
+      if (!volunteer) return;
+
+      const ok = window.confirm(`Ștergi acțiunea "${action.reason}"?`);
+      if (!ok) return;
+
+      try {
+        setBusy(true);
+        const remainingActions = state.actions.filter((a) => a.id !== actionId);
+        const metrics = getVolunteerAggregate(volunteerId, remainingActions);
+
+        await remove(ref(db, `${DB_ROOT}/actions/${actionId}`));
+        await set(ref(db, `${DB_ROOT}/volunteers/${volunteerId}`), {
+          ...serializeVolunteer(volunteer),
+          ...metrics
+        });
+
+        setStatus(els.actionStatus, "Acțiunea a fost ștearsă.", "success");
+      } catch (error) {
+        console.error(error);
+        setStatus(els.actionStatus, "Nu am putut șterge acțiunea.", "error");
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    function updateFormMode() {
+      const editing = Boolean(state.editingVolunteerId);
+      els.formTitle.textContent = editing ? "Editează voluntar" : "Adaugă voluntar";
+      els.saveVolunteerBtn.textContent = editing ? "Salvează modificări" : "Salvează voluntarul";
+      els.resetFormBtn.textContent = editing ? "Anulează editarea" : "Voluntar nou";
+    }
+
+    function resetForm(showMessage = true) {
+      state.editingVolunteerId = null;
+      els.volunteerForm.reset();
+      els.departmentInput.value = "HR";
+      els.statusInput.value = "true";
+      updateFormMode();
+      if (showMessage) {
+        setStatus(els.formStatus, "Formular pregătit pentru un voluntar nou.");
+      }
+    }
+
+    function setBusy(isBusy) {
+      state.busy = isBusy;
+      els.saveVolunteerBtn.disabled = isBusy;
+      els.resetFormBtn.disabled = isBusy;
+      els.saveActionBtn.disabled = isBusy;
+
+      els.fullNameInput.disabled = isBusy;
+      els.departmentInput.disabled = isBusy;
+      els.statusInput.disabled = isBusy;
+      els.avatarInput.disabled = isBusy;
+      els.actionVolunteerInput.disabled = isBusy;
+      els.actionTypeInput.disabled = isBusy;
+      els.actionPointsInput.disabled = isBusy;
+      els.actionReasonInput.disabled = isBusy;
+      els.actionDescriptionInput.disabled = isBusy;
+    }
+
+    function getVolunteerAggregate(volunteerId, actionsSource) {
+      const volunteerActions = actionsSource.filter((a) => a.volunteerId === volunteerId);
+      const monthlyPoints = volunteerActions
+        .filter((a) => isCurrentMonth(a.createdAt))
+        .reduce((sum, a) => sum + Number(a.points || 0), 0);
+      const totalPoints = volunteerActions.reduce((sum, a) => sum + Number(a.points || 0), 0);
+      const actionTypes = emptyTypes();
+
+      volunteerActions.forEach((a) => {
+        actionTypes[a.type] = (actionTypes[a.type] || 0) + 1;
+      });
+
+      const actionCount = volunteerActions.length;
+      const positiveActions = volunteerActions.filter((a) => Number(a.points || 0) > 0).length;
+      const badges = badgeDefinitions.filter((b) => b.test({ totalPoints, monthlyPoints, actionCount, actionTypes })).map((b) => b.name);
+
+      return {
+        totalPoints,
+        monthlyPoints,
+        actionCount,
+        streakDays: positiveActions,
+        badges
+      };
+    }
+
+    function getMonthlyPoints(volunteerId) {
+      return state.actions
+        .filter((action) => action.volunteerId === volunteerId && isCurrentMonth(action.createdAt))
+        .reduce((sum, action) => sum + Number(action.points || 0), 0);
+    }
+
+    function getMonthStartInputValue() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+    }
+
+    function getTodayInputValue() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    }
+
+    function toDateStart(dateInput) {
+      return new Date(`${dateInput}T00:00:00`);
+    }
+
+    function toDateEnd(dateInput) {
+      return new Date(`${dateInput}T23:59:59.999`);
+    }
+
+    function getActionsForRange(volunteerId, startInput, endInput) {
+      const start = toDateStart(startInput || getMonthStartInputValue());
+      const end = toDateEnd(endInput || getTodayInputValue());
+
+      return state.actions
+        .filter((a) => a.volunteerId === volunteerId)
+        .filter((a) => {
+          const date = new Date(a.createdAt);
+          return date >= start && date <= end;
+        })
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+
+    function median(values) {
+      if (!values.length) return 0;
+      const sorted = [...values].sort((a, b) => a - b);
+      const middle = Math.floor(sorted.length / 2);
+      return sorted.length % 2
+        ? sorted[middle]
+        : (sorted[middle - 1] + sorted[middle]) / 2;
+    }
+
+    function round2(value) {
+      return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+    }
+
+    
+function getMonthlyActionCount(volunteerId) {
+      return state.actions.filter((action) => action.volunteerId === volunteerId && isCurrentMonth(action.createdAt)).length;
+    }
+
+    function getMonthlyPenaltyCount(volunteerId) {
+      return state.actions.filter((action) =>
+        action.volunteerId === volunteerId &&
+        isCurrentMonth(action.createdAt) &&
+        Number(action.points || 0) < 0
+      ).length;
+    }
+
+    function getLastActionAt(volunteerId) {
+      const action = state.actions
+        .filter((item) => item.volunteerId === volunteerId)
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+      return action?.createdAt || "";
+    }
+
+    function getMonthlyRiskMetrics() {
+      const activeWithActivity = state.volunteers.filter(
+        (v) => v.activeStatus && getMonthlyActionCount(v.id) > 0
+      );
+      const scores = activeWithActivity.map((v) => getMonthlyPoints(v.id));
+
+      if (!scores.length) {
+        return {
+          median: 0,
+          mad: 0,
+          scale: 1,
+          riskLimit: 0,
+          criticalLimit: 0
+        };
+      }
+
+      const med = median(scores);
+      const deviations = scores.map((score) => Math.abs(score - med));
+      const mad = median(deviations);
+      const scale = Math.max(mad, 1);
+
+      return {
+        median: round2(med),
+        mad: round2(mad),
+        scale: round2(scale),
+        riskLimit: round2(med - 1.5 * scale),
+        criticalLimit: round2(med - 2.5 * scale)
+      };
+    }
+
+    function getVolunteerRiskStatus(volunteerId, metrics = getMonthlyRiskMetrics()) {
+      const score = getMonthlyPoints(volunteerId);
+      const monthlyActionCount = getMonthlyActionCount(volunteerId);
+      const monthlyPenaltyCount = getMonthlyPenaltyCount(volunteerId);
+      const robustIndex = monthlyActionCount
+        ? round2((score - metrics.median) / Math.max(metrics.scale, 1))
+        : 0;
+      const ratioBase = Math.max(Math.abs(metrics.median), 1);
+      const ratio = round2(score / ratioBase);
+
+      if (monthlyActionCount === 0) {
+        return {
+          label: "Neactualizat",
+          shortLabel: "Lipsă",
+          className: "pill-risk",
+          robustIndex,
+          ratioLabel: "0x",
+          internalStatus: "follow_up",
+          managerReason: "Nu există activitate în luna curentă."
+        };
+      }
+
+      if (score <= metrics.criticalLimit || score < 0 || monthlyPenaltyCount >= 2) {
+        return {
+          label: "Monitorizare",
+          shortLabel: "Monitorizare",
+          className: "pill-critical",
+          robustIndex,
+          ratioLabel: `${ratio}x`,
+          internalStatus: "critical_review",
+          managerReason: monthlyPenaltyCount >= 2
+            ? "Mai multe penalizări în aceeași lună."
+            : "Scor mult sub nivelul echipei."
+        };
+      }
+
+      if (score <= metrics.riskLimit || monthlyPenaltyCount >= 1 || score === 0) {
+        return {
+          label: "Atenție",
+          shortLabel: "Atenție",
+          className: "pill-risk",
+          robustIndex,
+          ratioLabel: `${ratio}x`,
+          internalStatus: "warning",
+          managerReason: monthlyPenaltyCount >= 1
+            ? "Există cel puțin o penalizare în luna curentă."
+            : "Scor sub nivelul obișnuit al echipei."
+        };
+      }
+
+      return {
+        label: "OK",
+        shortLabel: "OK",
+        className: "pill-score",
+        robustIndex,
+        ratioLabel: `${ratio}x`,
+        internalStatus: "normal",
+        managerReason: "Voluntarul este în zona normală a lunii."
+      };
+    }
+
+function emptyTypes() {
+      return {
+        participare: 0,
+        punctualitate: 0,
+        task: 0,
+        initiativa: 0,
+        impact: 0,
+        "cross-team": 0,
+        bonus: 0,
+        penalizare: 0
+      };
+    }
+
+    function normalizeVolunteer(v) {
+      return {
+        id: v.id || "",
+        fullName: v.fullName || "Voluntar",
+        department: v.department || "HR",
+        activeStatus: v.activeStatus !== false,
+        totalPoints: Number(v.totalPoints || 0),
+        monthlyPoints: Number(v.monthlyPoints || 0),
+        streakDays: Number(v.streakDays || 0),
+        badges: Array.isArray(v.badges) ? v.badges : [],
+        actionCount: Number(v.actionCount || 0),
+        avatar: v.avatar || getAvatar(v.fullName || "V"),
+        role: v.role || "volunteer",
+        createdAt: v.createdAt || new Date().toISOString()
+      };
+    }
+
+    function serializeVolunteer(v) {
+      return {
+        id: v.id,
+        fullName: v.fullName,
+        department: v.department,
+        activeStatus: v.activeStatus !== false,
+        totalPoints: Number(v.totalPoints || 0),
+        monthlyPoints: Number(v.monthlyPoints || 0),
+        streakDays: Number(v.streakDays || 0),
+        badges: Array.isArray(v.badges) ? v.badges : [],
+        actionCount: Number(v.actionCount || 0),
+        avatar: v.avatar || getAvatar(v.fullName || "V"),
+        role: v.role || "volunteer",
+        createdAt: v.createdAt || new Date().toISOString()
+      };
+    }
+
+    function normalizeAction(a) {
+      return {
+        id: a.id || "",
+        volunteerId: a.volunteerId || "",
+        type: a.type || "actiune",
+        points: Number(a.points || 0),
+        reason: a.reason || "",
+        description: a.description || "",
+        createdAt: a.createdAt || new Date().toISOString()
+      };
+    }
+
+    function canManageVolunteers() {
+      return !state.me?.isAnonymous && MANAGER_ROLES.includes(state.myProfile?.role || "");
+    }
+
+    function friendlyRole(role) {
+      if (role === "community_manager") return "Community manager";
+      if (role === "department_coordinator") return "Coordonator departament";
+      return "Voluntar";
+    }
+
+    function isCurrentMonth(iso) {
+      const now = new Date();
+      const date = new Date(iso);
+      return now.getMonth() === date.getMonth() && now.getFullYear() === date.getFullYear();
+    }
+
+    function getAvatar(name) {
+      const words = String(name).trim().split(/\s+/).filter(Boolean).slice(0, 2);
+      return words.map((word) => word[0] || "").join("").toUpperCase() || "V";
+    }
+
+    function formatDate(iso) {
+      return new Date(iso).toLocaleString("ro-RO", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function setStatus(element, text, variant = "") {
+      element.textContent = text;
+      element.className = "note" + (variant ? ` ${variant}` : "");
+    }
+
+    function empty(text) {
+      return `<div class="empty">${escapeHtml(text)}</div>`;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>

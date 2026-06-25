@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZBOR HUB Târgu Jiu - Departamente</title>
+  <style>
+    :root {
+      --bg: #071b2f;
+      --bg-2: #0e3158;
+      --panel: rgba(10, 31, 57, 0.82);
+      --panel-soft: rgba(255,255,255,0.08);
+      --text: #f5fbff;
+      --muted: #c7d9e9;
+      --teal: #12b8b5;
+      --teal-soft: rgba(18,184,181,0.15);
+      --pink: #ef4f95;
+      --pink-soft: rgba(239,79,149,0.16);
+      --blue: #3666d6;
+      --blue-soft: rgba(54,102,214,0.18);
+      --green: #67d87d;
+      --danger: #ff8f9f;
+      --warning: #ffd978;
+      --border: rgba(255,255,255,0.11);
+      --shadow: 0 18px 44px rgba(0,0,0,0.25);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--bg); }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 15%, rgba(18,184,181,0.22), transparent 18%),
+        radial-gradient(circle at 88% 18%, rgba(239,79,149,0.18), transparent 18%),
+        radial-gradient(circle at 55% 88%, rgba(54,102,214,0.18), transparent 24%),
+        linear-gradient(180deg, #12b8b5 0%, #138ea8 18%, #194f9d 52%, #0a2340 100%);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+
+    body.is-ready { opacity: 1; transform: translateY(0); }
+    body.is-leaving { opacity: 0; transform: translateY(10px); }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      filter: blur(18px);
+      pointer-events: none;
+      opacity: 0.25;
+      z-index: 0;
+    }
+
+    body::before {
+      left: -80px;
+      top: 120px;
+      background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.18) 55%, transparent 72%);
+    }
+
+    body::after {
+      right: -90px;
+      bottom: 70px;
+      background: radial-gradient(circle, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.14) 58%, transparent 74%);
+    }
+
+    button, input, select, textarea { font: inherit; }
+    select option, select optgroup { background: #ffffff; color: #111111; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      position: relative;
+      z-index: 1;
+    }
+
+    .sidebar {
+      background: rgba(7, 24, 43, 0.62);
+      border-right: 1px solid var(--border);
+      padding: 24px 18px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      line-height: 1.02;
+      letter-spacing: 0.02em;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .brand p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .nav-link {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border-radius: 18px;
+      text-decoration: none;
+      font-weight: 700;
+      color: var(--text);
+      border: 1px solid transparent;
+      background: rgba(255,255,255,0.05);
+      transition: 0.18s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.16);
+      transform: translateY(-1px);
+    }
+
+    .nav-link.hidden { display: none; }
+
+    .sidebar-footer {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .main { padding: 24px; }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .page-title h2 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      letter-spacing: 0.01em;
+    }
+
+    .page-title p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 74ch;
+    }
+
+    .toolbar, .control-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .chip {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 16px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: 0.18s ease;
+      font-weight: 800;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--pink), #ff79b1);
+      color: white;
+      box-shadow: 0 10px 22px rgba(239,79,149,0.25);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.09);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .access-banner {
+      display: none;
+      margin-bottom: 18px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255,217,120,0.10);
+      border: 1px solid rgba(255,217,120,0.24);
+      color: #fff4cf;
+      animation: fadeSlideIn 0.26s ease;
+    }
+
+    .access-banner.show { display: block; }
+    .access-banner strong { display: block; margin-bottom: 6px; font-size: 15px; }
+    .access-banner span { color: #f7e7b8; font-size: 13px; line-height: 1.5; }
+
+    .grid-4, .grid-2, .grid-3 {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-2 { grid-template-columns: 1.05fr 0.95fr; }
+
+    .card {
+      background: linear-gradient(180deg, rgba(11,35,64,0.84), rgba(8,28,53,0.78));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      transition: transform 0.22s ease, border-color 0.22s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    .accent-card {
+      background:
+        radial-gradient(circle at 80% 18%, rgba(255,255,255,0.22), transparent 20%),
+        linear-gradient(135deg, rgba(18,184,181,0.22), rgba(54,102,214,0.18) 52%, rgba(239,79,149,0.15) 100%),
+        rgba(8,28,53,0.82);
+    }
+
+    .stat-card {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(7, 29, 53, 0.85);
+      border: 1px solid var(--border);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    .stat-label { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+    .stat-value { font-size: 32px; font-weight: 800; }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .section-head h3 { margin: 0; font-size: 20px; }
+    .section-head p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .stack { display: flex; flex-direction: column; gap: 12px; }
+
+    .row-card {
+      display: grid;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      animation: fadeSlideIn 0.24s ease;
+      transition: transform 0.18s ease, border-color 0.18s ease;
+    }
+
+    .row-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    .department-row { grid-template-columns: 1fr auto; }
+    .member-row { grid-template-columns: 58px 1fr auto; }
+
+    .row-main {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .row-main strong { font-size: 15px; }
+    .row-sub { color: var(--muted); font-size: 13px; line-height: 1.45; }
+
+    .avatar-box {
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(18,184,181,0.36), rgba(239,79,149,0.30));
+      color: white;
+      font-size: 18px;
+      font-weight: 800;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+    }
+
+    .pill-soft, .pill-score {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .pill-soft {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .pill-score {
+      background: rgba(103,216,125,0.14);
+      border: 1px solid rgba(103,216,125,0.20);
+      color: #dcffe5;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .field label { color: var(--muted); font-size: 13px; }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 12px 13px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .quick-card {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+    }
+
+    .quick-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    .quick-card span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .empty {
+      padding: 20px;
+      border-radius: 18px;
+      border: 1px dashed rgba(255,255,255,0.18);
+      color: var(--muted);
+      text-align: center;
+      animation: fadeSlideIn 0.24s ease;
+    }
+
+    .note {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .hidden { display: none !important; }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 1180px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .nav { display: grid; grid-template-columns: repeat(5, 1fr); }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .quick-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      .main { padding: 18px; }
+      .grid-4 { grid-template-columns: 1fr; }
+      .nav { grid-template-columns: 1fr; }
+      .field-grid { grid-template-columns: 1fr; }
+      .department-row, .member-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>ZBOR HUB Târgu Jiu</h1>
+        <p>Bine ai venit în zona de coordonare a echipelor. Aici vezi cine conduce fiecare departament și cum stă fiecare echipă în funcție de puncte și activitate.</p>
+      </div>
+
+      <nav class="nav">
+        <a class="nav-link" href="index.html">Dashboard</a>
+        <a class="nav-link active" href="departments.html">Departamente</a>
+        <a class="nav-link" href="volunteers.html">Voluntari</a>
+        <a class="nav-link" href="puncte.html">Legenda punctelor</a>
+        <a class="nav-link" href="users.html" id="coordinatorsNavLink">Coordonatori</a>
+      </nav>
+
+      <div class="sidebar-footer" id="sidebarFooterText">
+        Fiecare departament are un singur coordonator.<br>
+        Dacă este setat, îl vezi imediat în listă, în detalii și în formular.
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="page-title">
+          <h2>Departamente</h2>
+          <p>Vezi rapid cine coordonează fiecare departament, scorul lunar și componența fiecărei echipe.</p>
+        </div>
+        <div class="toolbar">
+          <span class="chip" id="monthChip">Luna curentă</span>
+          <span class="chip" id="currentRole">Rol: necunoscut</span>
+          <button class="btn btn-secondary" id="signOutBtn">Ieșire</button>
+        </div>
+      </header>
+
+      <div class="access-banner" id="accessBanner">
+        <strong>Ai acces doar în modul de vizualizare</strong>
+        <span>Ca voluntar poți vedea departamentele și componența lor, dar nu poți schimba coordonatorii sau setările.</span>
+      </div>
+
+    
+
+      <section class="grid-4">
+        <div class="stat-card">
+          <div class="stat-label">Departamente</div>
+          <div class="stat-value" id="statDepartments">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Membri activi</div>
+          <div class="stat-value" id="statMembers">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Coordonatori setați</div>
+          <div class="stat-value" id="statCoordinators">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Puncte luna asta</div>
+          <div class="stat-value" id="statPoints">0</div>
+        </div>
+      </section>
+
+      <section class="grid-2" style="margin-top: 18px;">
+        <div class="stack">
+          <div class="card">
+            <div class="section-head">
+              <div>
+                <h3>Clasament departamente</h3>
+                <p>Scor mediu lunar, total lunar și coordonatorul actual</p>
+              </div>
+            </div>
+            <div class="stack" id="departmentsList"></div>
+          </div>
+
+          <div class="card" id="settingsCard">
+            <div class="section-head">
+              <div>
+                <h3>Setări departament</h3>
+                <p>Alegi coordonatorul din listă, după nume</p>
+              </div>
+            </div>
+
+            <form id="departmentForm">
+              <div class="field-grid">
+                <div class="field">
+                  <label for="departmentIdInput">Departament</label>
+                  <select id="departmentIdInput" required>
+                    <option value="hr">HR</option>
+                    <option value="pr">PR si Comunicare</option>
+                    <option value="create">Creatie si Implementare</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="displayNameInput">Denumire afișată</label>
+                  <input id="displayNameInput" type="text" required />
+                </div>
+              </div>
+
+              <div class="field-grid">
+                <div class="field">
+                  <label for="coordinatorSelect">Coordonator</label>
+                  <select id="coordinatorSelect"></select>
+                </div>
+                <div class="field">
+                  <label for="targetInput">Obiectiv lunar</label>
+                  <input id="targetInput" type="text" placeholder="Ex: 120 puncte" />
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="notesInput">Note</label>
+                <textarea id="notesInput" placeholder="Detalii utile pentru departament"></textarea>
+              </div>
+
+              <div class="toolbar">
+                <button class="btn btn-primary" type="submit">Salvează setările</button>
+                <button class="btn btn-secondary" type="button" id="resetFormBtn">Încarcă datele</button>
+              </div>
+            </form>
+
+            <div class="note" id="formStatus">
+              Coordonatorul se alege după nume. Dacă există deja un coordonator setat pe departament, apare automat și aici.
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <h3>Detalii departament</h3>
+              <p>Membri, coordonator și top intern pentru departamentul selectat</p>
+            </div>
+            <div class="control-row">
+              <select id="selectedDepartmentInput">
+                <option value="hr">HR</option>
+                <option value="pr">PR si Comunicare</option>
+                <option value="create">Creatie si Implementare</option>
+              </select>
+            </div>
+          </div>
+          <div id="selectedDepartmentDetails"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyCSVheYP870CO0d9kbBGW6xMqS5SeVV_x4",
+  authDomain: "punctevoluntari.firebaseapp.com",
+  databaseURL: "https://punctevoluntari-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "punctevoluntari",
+  storageBucket: "punctevoluntari.firebasestorage.app",
+  messagingSenderId: "1055611698088",
+  appId: "1:1055611698088:web:074cc034009a60cca83b9d",
+  measurementId: "G-B98Y7KMLPJ"
+};
+
+    const DB_ROOT = "zborHubTgJiu";
+    const MANAGER_ROLES = ["community_manager", "department_coordinator"];
+    const BASE_DEPARTMENTS = [
+      { id: "hr", name: "HR" },
+      { id: "pr", name: "PR si Comunicare" },
+      { id: "create", name: "Creatie si Implementare" }
+    ];
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const els = {
+      monthChip: document.getElementById("monthChip"),
+      currentRole: document.getElementById("currentRole"),
+      signOutBtn: document.getElementById("signOutBtn"),
+      statDepartments: document.getElementById("statDepartments"),
+      statMembers: document.getElementById("statMembers"),
+      statCoordinators: document.getElementById("statCoordinators"),
+      statPoints: document.getElementById("statPoints"),
+      departmentsList: document.getElementById("departmentsList"),
+      departmentForm: document.getElementById("departmentForm"),
+      settingsCard: document.getElementById("settingsCard"),
+      departmentIdInput: document.getElementById("departmentIdInput"),
+      displayNameInput: document.getElementById("displayNameInput"),
+      coordinatorSelect: document.getElementById("coordinatorSelect"),
+      targetInput: document.getElementById("targetInput"),
+      notesInput: document.getElementById("notesInput"),
+      resetFormBtn: document.getElementById("resetFormBtn"),
+      formStatus: document.getElementById("formStatus"),
+      selectedDepartmentInput: document.getElementById("selectedDepartmentInput"),
+      selectedDepartmentDetails: document.getElementById("selectedDepartmentDetails"),
+      accessBanner: document.getElementById("accessBanner"),
+      coordinatorsNavLink: document.getElementById("coordinatorsNavLink"),
+      sidebarFooterText: document.getElementById("sidebarFooterText"),
+      navLinks: Array.from(document.querySelectorAll(".nav-link"))
+    };
+
+    const state = {
+      me: null,
+      myProfile: null,
+      volunteers: [],
+      actions: [],
+      departmentSettings: {},
+      users: []
+    };
+
+    bindTransitions();
+    requestAnimationFrame(() => document.body.classList.add("is-ready"));
+    renderMonthChip();
+
+    els.signOutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
+
+    els.selectedDepartmentInput.addEventListener("change", renderSelectedDepartment);
+    els.departmentIdInput.addEventListener("change", () => {
+      populateCoordinatorSelect();
+      loadDepartmentIntoForm(true);
+    });
+    els.resetFormBtn.addEventListener("click", () => loadDepartmentIntoForm(true));
+
+    els.departmentForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      if (!canManageDepartments()) {
+        setFormStatus("Nu ai permisiunea să modifici departamente.", true);
+        return;
+      }
+
+      const departmentId = els.departmentIdInput.value;
+      const coordinator = selectedCoordinatorProfile();
+
+      const payload = {
+        id: departmentId,
+        displayName: els.displayNameInput.value.trim() || deptName(departmentId),
+        coordinatorUid: coordinator?.uid || "",
+        coordinatorName: coordinator?.fullName || "",
+        coordinatorEmail: coordinator?.email || "",
+        monthlyTarget: els.targetInput.value.trim(),
+        notes: els.notesInput.value.trim()
+      };
+
+      try {
+        await set(ref(db, `${DB_ROOT}/departmentSettings/${departmentId}`), payload);
+        setFormStatus("Setările departamentului au fost salvate.");
+      } catch (error) {
+        console.error(error);
+        setFormStatus("Nu am putut salva setările departamentului.", true);
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      state.me = user;
+
+      if (user.isAnonymous) {
+        state.myProfile = { role: "volunteer", fullName: "Voluntar" };
+        applyRoleVisibility();
+        renderRole();
+      } else {
+        listenToMyProfile(user.uid);
+      }
+
+      listenToVolunteers();
+      listenToActions();
+      listenToDepartmentSettings();
+      listenToUsers();
+    });
+
+    function bindTransitions() {
+      els.navLinks.forEach((link) => {
+        link.addEventListener("click", (event) => {
+          const href = link.getAttribute("href");
+          if (!href || href.startsWith("#") || link.classList.contains("hidden")) return;
+          event.preventDefault();
+          document.body.classList.remove("is-ready");
+          document.body.classList.add("is-leaving");
+          setTimeout(() => {
+            window.location.href = href;
+          }, 180);
+        });
+      });
+    }
+
+    function renderMonthChip() {
+      const label = new Date().toLocaleDateString("ro-RO", { month: "long", year: "numeric" });
+      els.monthChip.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+    }
+
+    function listenToMyProfile(uid) {
+      onValue(ref(db, `${DB_ROOT}/users/${uid}`), (snapshot) => {
+        state.myProfile = snapshot.val() || null;
+        renderRole();
+        applyRoleVisibility();
+        lockDepartmentForm(!canManageDepartments());
+      });
+    }
+
+    function renderRole() {
+      const role = state.myProfile?.role || "volunteer";
+      els.currentRole.textContent = `Rol: ${friendlyRole(role)}`;
+    }
+
+    function applyRoleVisibility() {
+      const role = state.myProfile?.role || "volunteer";
+      const isVolunteer = role === "volunteer";
+
+      els.coordinatorsNavLink.classList.toggle("hidden", isVolunteer);
+      els.accessBanner.classList.toggle("show", isVolunteer);
+      els.settingsCard.classList.toggle("hidden", isVolunteer);
+
+      els.sidebarFooterText.innerHTML = isVolunteer
+        ? "Ești conectat ca voluntar.<br>Poți vedea structura departamentelor, dar nu poți schimba coordonatorii sau setările."
+        : "Fiecare departament are un singur coordonator.<br>Dacă este setat, îl vezi imediat în listă, în detalii și în formular.";
+    }
+
+    function lockDepartmentForm(locked) {
+      els.departmentForm.querySelectorAll("input, select, textarea, button").forEach((el) => {
+        el.disabled = locked;
+      });
+    }
+
+    function listenToVolunteers() {
+      onValue(ref(db, `${DB_ROOT}/volunteers`), (snapshot) => {
+        state.volunteers = Object.values(snapshot.val() || {}).map(normalizeVolunteer);
+        renderPage();
+      });
+    }
+
+    function listenToActions() {
+      onValue(ref(db, `${DB_ROOT}/actions`), (snapshot) => {
+        state.actions = Object.values(snapshot.val() || {}).map(normalizeAction);
+        renderPage();
+      });
+    }
+
+    function listenToDepartmentSettings() {
+      onValue(ref(db, `${DB_ROOT}/departmentSettings`), (snapshot) => {
+        state.departmentSettings = snapshot.val() || {};
+        renderPage();
+      });
+    }
+
+    function listenToUsers() {
+      onValue(ref(db, `${DB_ROOT}/users`), (snapshot) => {
+        state.users = Object.values(snapshot.val() || {});
+        renderPage();
+      });
+    }
+
+    function renderPage() {
+      renderStats();
+      populateCoordinatorSelect();
+      renderDepartmentsList();
+      renderSelectedDepartment();
+      loadDepartmentIntoForm(false);
+    }
+
+    function renderStats() {
+      const activeMembers = state.volunteers.filter((v) => v.activeStatus);
+      const totalMonthlyPoints = activeMembers.reduce((sum, v) => sum + getMonthlyPoints(v.id), 0);
+      const coordinatorCount = BASE_DEPARTMENTS.filter((dept) => Boolean(coordinatorForDepartment(dept.id))).length;
+
+      els.statDepartments.textContent = BASE_DEPARTMENTS.length;
+      els.statMembers.textContent = activeMembers.length;
+      els.statCoordinators.textContent = coordinatorCount;
+      els.statPoints.textContent = totalMonthlyPoints;
+    }
+
+    function renderDepartmentsList() {
+      const rows = buildDepartmentRows();
+
+      els.departmentsList.innerHTML = rows.length
+        ? rows.map((dept, index) => {
+            const settings = state.departmentSettings[dept.id] || {};
+            const coordinator = coordinatorForDepartment(dept.id);
+            const coordinatorName = coordinator?.fullName || settings.coordinatorName || "nesetat";
+            return `
+              <div class="row-card department-row">
+                <div class="row-main">
+                  <strong>#${index + 1} • ${escapeHtml(settings.displayName || dept.name)}</strong>
+                  <div class="row-sub">${dept.members} membri activi • ${dept.totalMonthlyPoints} p luna asta • medie ${dept.averageMonthlyPoints} p</div>
+                  <div class="row-sub">Coordonator: ${escapeHtml(coordinatorName)}</div>
+                  <div class="row-sub">Acțiuni luna asta: ${dept.monthlyActions}</div>
+                </div>
+                <div class="toolbar">
+                  <span class="pill-score">${coordinatorName !== "nesetat" ? "coordonator setat" : "fără coordonator"}</span>
+                  <button class="btn btn-secondary" data-action="view" data-id="${dept.id}">Vezi</button>
+                </div>
+              </div>
+            `;
+          }).join("")
+        : empty("Nu există departamente.");
+
+      els.departmentsList.querySelectorAll("button[data-action='view']").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          els.selectedDepartmentInput.value = btn.dataset.id;
+          renderSelectedDepartment();
+        });
+      });
+    }
+
+    function renderSelectedDepartment() {
+      const departmentId = els.selectedDepartmentInput.value;
+      const settings = state.departmentSettings[departmentId] || {};
+      const members = state.volunteers
+        .filter((v) => normalizeDepartment(v.department) === departmentId)
+        .sort((a, b) => getMonthlyPoints(b.id) - getMonthlyPoints(a.id) || Number(b.totalPoints || 0) - Number(a.totalPoints || 0));
+
+      const coordinator = coordinatorForDepartment(departmentId);
+      const coordinatorName = coordinator?.fullName || settings.coordinatorName || "nesetat";
+
+      els.selectedDepartmentDetails.innerHTML = `
+        <div class="note">
+          <strong>${escapeHtml(settings.displayName || deptName(departmentId))}</strong><br>
+          Coordonator: ${escapeHtml(coordinatorName)}<br>
+          Obiectiv lunar: ${escapeHtml(settings.monthlyTarget || "nesetat")}<br>
+          Note: ${escapeHtml(settings.notes || "fără note")}
+        </div>
+        <div class="stack" style="margin-top:14px;">
+          ${members.length
+            ? members.map((member, index) => `
+                <div class="row-card member-row">
+                  <div class="avatar-box">${escapeHtml(member.avatar || initials(member.fullName))}</div>
+                  <div class="row-main">
+                    <strong>#${index + 1} • ${escapeHtml(member.fullName)}</strong>
+                    <div class="row-sub">${member.activeStatus ? "activ" : "inactiv"} • ${getMonthlyPoints(member.id)} p luna asta • ${member.totalPoints} p total</div>
+                  </div>
+                  <div class="pill-soft">${getMonthlyPoints(member.id)} p</div>
+                </div>
+              `).join("")
+            : empty("Nu există membri în acest departament.")}
+        </div>
+      `;
+    }
+
+    function populateCoordinatorSelect() {
+      const currentDepartmentId = els.departmentIdInput.value || "hr";
+      const currentValue = els.coordinatorSelect.value;
+      const coordinators = state.users
+        .filter((user) =>
+          user.role === "department_coordinator" &&
+          user.activeStatus !== false &&
+          normalizeDepartment(user.department) === currentDepartmentId
+        )
+        .sort((a, b) => (a.fullName || "").localeCompare(b.fullName || "", "ro"));
+
+      els.coordinatorSelect.innerHTML =
+        '<option value="">Fără coordonator ales</option>' +
+        coordinators.map((user) => `<option value="${escapeHtml(user.uid)}">${escapeHtml(user.fullName)}</option>`).join("");
+
+      const preferred = state.departmentSettings[currentDepartmentId]?.coordinatorUid || coordinatorForDepartment(currentDepartmentId)?.uid || "";
+      els.coordinatorSelect.value = coordinators.some((user) => user.uid === currentValue) && currentValue ? currentValue : preferred;
+    }
+
+    function loadDepartmentIntoForm(showMessage = false) {
+      if (els.settingsCard.classList.contains("hidden")) return;
+      const departmentId = els.departmentIdInput.value;
+      const settings = state.departmentSettings[departmentId] || {};
+      const fallbackCoordinator = coordinatorForDepartment(departmentId);
+
+      els.displayNameInput.value = settings.displayName || deptName(departmentId);
+      els.coordinatorSelect.value = settings.coordinatorUid || fallbackCoordinator?.uid || "";
+      els.targetInput.value = settings.monthlyTarget || "";
+      els.notesInput.value = settings.notes || "";
+
+      if (showMessage) {
+        setFormStatus(`Editezi setările pentru ${deptName(departmentId)}.`);
+      }
+    }
+
+    function buildDepartmentRows() {
+      return BASE_DEPARTMENTS.map((dept) => {
+        const members = state.volunteers.filter((v) => normalizeDepartment(v.department) === dept.id && v.activeStatus);
+        const totalMonthlyPoints = members.reduce((sum, v) => sum + getMonthlyPoints(v.id), 0);
+        const averageMonthlyPoints = members.length ? Math.round(totalMonthlyPoints / members.length) : 0;
+        const monthlyActions = state.actions.filter((action) => {
+          const volunteer = state.volunteers.find((v) => v.id === action.volunteerId);
+          return volunteer && normalizeDepartment(volunteer.department) === dept.id && isCurrentMonth(action.createdAt);
+        }).length;
+
+        return { ...dept, members: members.length, totalMonthlyPoints, averageMonthlyPoints, monthlyActions };
+      }).sort((a, b) => b.averageMonthlyPoints - a.averageMonthlyPoints || a.name.localeCompare(b.name, "ro"));
+    }
+
+    function selectedCoordinatorProfile() {
+      const uid = els.coordinatorSelect.value;
+      return state.users.find((u) => u.uid === uid) || null;
+    }
+
+    function coordinatorForDepartment(departmentId) {
+      const explicitUid = state.departmentSettings[departmentId]?.coordinatorUid;
+      if (explicitUid) {
+        const explicitUser = state.users.find((u) => u.uid === explicitUid && u.activeStatus !== false);
+        if (explicitUser) return explicitUser;
+      }
+
+      return state.users.find(
+        (u) => u.role === "department_coordinator" &&
+        normalizeDepartment(u.department) === departmentId &&
+        u.activeStatus !== false
+      ) || null;
+    }
+
+    function getMonthlyPoints(volunteerId) {
+      return state.actions
+        .filter((action) => action.volunteerId === volunteerId && isCurrentMonth(action.createdAt))
+        .reduce((sum, action) => sum + Number(action.points || 0), 0);
+    }
+
+    function canManageDepartments() {
+      return !state.me?.isAnonymous && MANAGER_ROLES.includes(state.myProfile?.role || "");
+    }
+
+    function normalizeVolunteer(v) {
+      return {
+        id: v.id || "",
+        fullName: v.fullName || "Voluntar",
+        department: v.department || "HR",
+        activeStatus: v.activeStatus !== false,
+        totalPoints: Number(v.totalPoints || 0),
+        avatar: v.avatar || initials(v.fullName || "V")
+      };
+    }
+
+    function normalizeAction(a) {
+      return {
+        id: a.id || "",
+        volunteerId: a.volunteerId || "",
+        points: Number(a.points || 0),
+        createdAt: a.createdAt || new Date().toISOString()
+      };
+    }
+
+    function deptName(id) {
+      return BASE_DEPARTMENTS.find((d) => d.id === id)?.name || "Necunoscut";
+    }
+
+    function normalizeDepartment(value) {
+      if (value === "HR" || value === "hr") return "hr";
+      if (value === "PR si Comunicare" || value === "pr") return "pr";
+      if (value === "Creatie si Implementare" || value === "create") return "create";
+      return value;
+    }
+
+    function isCurrentMonth(iso) {
+      const now = new Date();
+      const date = new Date(iso);
+      return now.getMonth() === date.getMonth() && now.getFullYear() === date.getFullYear();
+    }
+
+    function friendlyRole(role) {
+      return role === "community_manager" ? "Community manager" : role === "department_coordinator" ? "Coordonator departament" : "Voluntar";
+    }
+
+    function initials(name) {
+      return (String(name || "U").trim().split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]).join("").toUpperCase()) || "U";
+    }
+
+    function setFormStatus(text, isError = false) {
+      els.formStatus.textContent = text;
+      els.formStatus.style.color = isError ? "#ffdede" : "var(--muted)";
+      els.formStatus.style.borderColor = isError ? "rgba(255,143,159,0.28)" : "var(--border)";
+      els.formStatus.style.background = isError ? "rgba(255,143,159,0.10)" : "rgba(255,255,255,0.06)";
+    }
+
+    function empty(text) {
+      return `<div class="empty">${escapeHtml(text)}</div>`;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>
