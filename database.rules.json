@@ -1,0 +1,48 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "zborHubTgJiu": {
+      ".read": "auth != null",
+      ".write": false,
+
+      "users": {
+        "$uid": {
+          ".write": "auth != null && root.child('zborHubTgJiu/users').child(auth.uid).child('activeStatus').val() === true && root.child('zborHubTgJiu/users').child(auth.uid).child('role').val() === 'community_manager'",
+          ".validate": "!newData.exists() || (newData.hasChildren(['uid', 'fullName', 'email', 'role', 'activeStatus']) && newData.child('uid').isString() && newData.child('fullName').isString() && newData.child('email').isString() && (newData.child('role').val() === 'community_manager' || newData.child('role').val() === 'department_coordinator') && newData.child('activeStatus').isBoolean())"
+        }
+      },
+
+      "volunteers": {
+        "$volunteerId": {
+          ".write": "auth != null && root.child('zborHubTgJiu/users').child(auth.uid).child('activeStatus').val() === true && (root.child('zborHubTgJiu/users').child(auth.uid).child('role').val() === 'community_manager' || root.child('zborHubTgJiu/users').child(auth.uid).child('role').val() === 'department_coordinator')",
+          ".validate": "!newData.exists() || (newData.hasChildren(['id', 'fullName', 'department', 'activeStatus', 'role']) && newData.child('id').isString() && newData.child('fullName').isString() && (newData.child('department').val() === 'HR' || newData.child('department').val() === 'PR si Comunicare' || newData.child('department').val() === 'Creatie si Implementare') && newData.child('activeStatus').isBoolean() && newData.child('role').val() === 'volunteer')"
+        }
+      },
+
+      "actions": {
+        "$actionId": {
+          ".write": "auth != null && root.child('zborHubTgJiu/users').child(auth.uid).child('activeStatus').val() === true && (root.child('zborHubTgJiu/users').child(auth.uid).child('role').val() === 'community_manager' || root.child('zborHubTgJiu/users').child(auth.uid).child('role').val() === 'department_coordinator')",
+          ".validate": "!newData.exists() || (newData.hasChildren(['id', 'volunteerId', 'type', 'points', 'reason', 'createdByUid', 'createdByName', 'createdAt']) && newData.child('id').isString() && newData.child('volunteerId').isString() && newData.child('type').isString() && newData.child('points').isNumber() && newData.child('points').val() >= -500 && newData.child('points').val() <= 500 && newData.child('reason').isString() && newData.child('createdByUid').val() === auth.uid && newData.child('createdByName').isString() && newData.child('createdAt').isString())"
+        }
+      },
+
+      "departmentSettings": {
+        "$departmentId": {
+          ".write": "auth != null && root.child('zborHubTgJiu/users').child(auth.uid).child('activeStatus').val() === true && (root.child('zborHubTgJiu/users').child(auth.uid).child('role').val() === 'community_manager' || root.child('zborHubTgJiu/users').child(auth.uid).child('role').val() === 'department_coordinator')",
+          ".validate": "!newData.exists() || (newData.hasChildren(['id', 'displayName']) && ($departmentId === 'hr' || $departmentId === 'pr' || $departmentId === 'create') && newData.child('id').val() === $departmentId && newData.child('displayName').isString())"
+        }
+      },
+
+      "pointsLegend": {
+        ".write": "auth != null && root.child('zborHubTgJiu/users').child(auth.uid).child('activeStatus').val() === true && (root.child('zborHubTgJiu/users').child(auth.uid).child('role').val() === 'community_manager' || root.child('zborHubTgJiu/users').child(auth.uid).child('role').val() === 'department_coordinator')"
+      }
+    },
+
+    "zborHubTgJiu_staging": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+}
