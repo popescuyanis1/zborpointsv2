@@ -22,3 +22,24 @@ Security goals:
 6. Allow managers and coordinators to write operational data.
 7. Later restrict department coordinators to their own departments.
 8. Later separate public volunteer view from private manager data.
+
+## Security Rules v1 deployed
+
+Date: 2026-06-25
+
+Status: deployed and tested
+
+Tested:
+
+- [ ] live login
+- [ ] live dashboard
+- [ ] live volunteers page
+- [ ] live guest access
+- [ ] staging login
+- [ ] staging demo volunteers
+- [ ] manager write access
+- [ ] volunteer view-only mode
+
+Notes:
+
+-
